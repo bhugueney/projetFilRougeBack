@@ -4,30 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+//import javax.persistence.Column;
 //import javax.persistence.CascadeType;
 //import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 //@MappedSuperclass
 @Entity(name = "Recipe")
-@PrimaryKeyJoinColumn(name="id")
+//@PrimaryKeyJoinColumn(name="id")
 @Inheritance(strategy = InheritanceType.JOINED)
 //@Table(name = "recipes")
 public class Recipe extends Ingredient {
-	
+	private static final long serialVersionUID = 1L;
 	
 	/*@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ingredient")
-	@SequenceGenerator(name = "ingredient", sequenceName = "ingredient_seq", allocationSize = 1)
-	@Column(name = "ID")
-	private Long id;*/
-	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_recipe", nullable = false, foreignKey = @ForeignKey(name = "id_recipe"))
+	private Ingredient recipeInIngredient;*/
+
 	// a recipe contend a list of ingredients with their quantity
 	//@Embedded
+	@JsonManagedReference
 	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<QuantityRecipe> listOfIngredients = new ArrayList<>();
 	
@@ -35,10 +43,7 @@ public class Recipe extends Ingredient {
 		@OneToMany(mappedBy = "recipe")
 		private List<Meal> listOfMeals = new ArrayList<>();
 		
-		@Override
-		public String toString() {
-			return "PTDR";
-		}
+		
 		
 		/************************
 		 * GETTERS AND SETTERS

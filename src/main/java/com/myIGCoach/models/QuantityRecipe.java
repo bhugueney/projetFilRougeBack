@@ -11,7 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.sym.Name;
 
 
 /**
@@ -34,21 +36,19 @@ public class QuantityRecipe implements Serializable{
 	@Id
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fk_recipe", nullable = false, foreignKey = @ForeignKey(name = "fk_recipe"))
-	@JsonIgnore
+	@JsonBackReference
 	private Recipe recipe;
 	// link to the ingredients since object Ingredient
 	@Id
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fk_ingredient", nullable = false, foreignKey = @ForeignKey(name = "fk_ingredient"))
+	//@JsonBackReference(value = "ingredient")
 	private Ingredient ingredient;
 	// quantity of ingredient
 	@Column(name = "quantity", nullable = false)
 	private double quantity;
 	
-	@Override
-	public String toString() {
-		return "LOL";
-	}
+	
 	
 	/************************
 	 * GETTERS AND SETTERS

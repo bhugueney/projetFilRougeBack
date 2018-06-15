@@ -40,15 +40,20 @@ public class IngredientController {
 		return ingredientService.read(id);
 	}
 	
+	// TODO management of update to respect the history
+	/*
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public String update(@PathVariable("id") Long id, @RequestBody Ingredient resource) {
 		return ingredientService.update(resource, id);
 	}
 	
+	*/
+	// TODO management of delete to respect the history
+	/*
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public String delete(@PathVariable("id") Long id) {
 		return ingredientService.delete(id);
 	}
-	
+	*/
 }

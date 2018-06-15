@@ -25,6 +25,7 @@ public class RecipeController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public Recipe create(@RequestBody Recipe r) {
+		System.out.println(r.toString());
 		return recipeService.create(r);
 	}
 

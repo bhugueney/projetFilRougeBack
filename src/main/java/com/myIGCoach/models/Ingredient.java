@@ -1,6 +1,6 @@
 package com.myIGCoach.models;
 
-//import java.io.Serializable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,17 +17,22 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
+//import javax.persistence.OneToOne;
 //import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 //@MappedSuperclass
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED) //this is the type of link between DB to reflect the heritage, here the choice is a join
 @Table(name = "ingredients")
-public class Ingredient /*implements Serializable*/ {
-	//private static final long serialVersionUID = 1L;
+public class Ingredient implements Serializable {
+	private static final long serialVersionUID = 1L;
 	
 	// id of ingredient
 	@Id
@@ -87,13 +92,13 @@ public class Ingredient /*implements Serializable*/ {
 	
 	// this is the relation Object between Recipe who content some ingredients with quantity, this link is done by object QuantityRecipe 
 	//@Embedded
+	//@JsonManagedReference
 	@OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
 	private List<QuantityRecipe> listOfRecipes = new ArrayList<>();
 	
-	@Override
-	public String toString() {
-		return "MDR";
-	}
+	/*@OneToOne(mappedBy = "id_recipe")
+	private Recipe linkRecipe;*/
+	
 	
 	/************************
 	 * GETTERS AND SETTERS

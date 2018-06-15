@@ -10,5 +10,6 @@ import com.myIGCoach.models.Recipe;
 @Repository
 @Named
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
+	//public Recipe create(Recipe r);
 
 }

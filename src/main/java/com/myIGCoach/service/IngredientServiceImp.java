@@ -35,7 +35,7 @@ public class IngredientServiceImp implements IngredientService {
 			ingredientRepository.save(resource);
 			return "Update is ok";
 		}else {
-			return "Update impossible because this foo does not exist.";
+			return "Update impossible because this ingredient does not exist.";
 		}
 	}
 	

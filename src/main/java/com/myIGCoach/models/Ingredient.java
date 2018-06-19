@@ -88,6 +88,7 @@ public class Ingredient implements Serializable {
 	// creator of ingredient since object user
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user"))
+	@JsonBackReference
 	private User owner;
 	
 	// this is the relation Object between Recipe who content some ingredients with quantity, this link is done by object QuantityRecipe 

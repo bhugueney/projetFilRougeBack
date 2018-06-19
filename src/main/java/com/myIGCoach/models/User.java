@@ -12,13 +12,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "users")
 public class User {
 	// id of user
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user")
-	@SequenceGenerator(name = "user", sequenceName = "user", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users")
+	@SequenceGenerator(name = "users", sequenceName = "user_seq", allocationSize = 1)
 	private Long id;
 	// firstName of user
 	@Column(name = "firstName")
@@ -31,6 +33,7 @@ public class User {
 	private String email;
 	// this is the relation Object between user who is owner of ingredient
 	@OneToMany(mappedBy = "owner")
+	@JsonManagedReference
 	private List<Ingredient> ingredients = new ArrayList<>();
 	
 	/************************

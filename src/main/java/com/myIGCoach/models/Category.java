@@ -15,6 +15,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -32,11 +36,15 @@ public class Category {
 	// parent is an other object Category and it can have one parent BUT it can be parent of more child
 	 ***************************************************************************************************/
 	// this is the id of parent of this category and it's saved in DB with a column 'fk_parent'
-	@ManyToOne(cascade = (CascadeType.ALL))
+	@ManyToOne
 	@JoinColumn(name = "fk_parent")
+	@JsonBackReference
+	//@JsonManagedReference
 	private Category parent;
 	// this is the link of parent with child, this relation exist in Object but in DB it's the link with column 'fk_parent' 
 	@OneToMany(mappedBy = "parent")
+	@JsonManagedReference
+	//@JsonBackReference
 	private List<Category> listOfChilds = new ArrayList<>();
 	
 	// this is the relation Object between category and ingredient

@@ -5,51 +5,40 @@ import java.sql.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "meals")
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@Entity(name = "meals")
+//@Inheritance(strategy = InheritanceType.JOINED)
+//@Table(name = "meals")
 public class Meal extends Recipe {
-	// id of meal
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "meal")
-	@SequenceGenerator(name = "meal", sequenceName = "meal_seq", allocationSize = 1)
-	@Column(name = "ID")
-	private Long id;
+	private static final long serialVersionUID = 1L;
+	
 	// type of meal since MealType class
 	@Column(name = "mealType")
 	private MealType mealType;
+	
 	// date of meal
 	@Column(name = "date")
 	private Date date;
-	// link with details of preparation that corresponds to a recipe which corresponds at an ingredient
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_ingredient")
-	private Recipe recipe;
+	
 	
 	/************************
 	 * GETTERS AND SETTERS
 	 ***********************/
-
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the mealType
@@ -79,18 +68,4 @@ public class Meal extends Recipe {
 		this.date = date;
 	}
 
-	/**
-	 * @return the recipe
-	 */
-	public Recipe getRecipe() {
-		return recipe;
-	}
-
-	/**
-	 * @param recipe the recipe to set
-	 */
-	public void setRecipe(Recipe recipe) {
-		this.recipe = recipe;
-	}
-	
 }

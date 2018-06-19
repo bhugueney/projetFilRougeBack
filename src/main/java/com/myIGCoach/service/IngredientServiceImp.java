@@ -16,19 +16,24 @@ public class IngredientServiceImp implements IngredientService {
 	@Inject
 	IngredientRepository ingredientRepository;
 
+	@Override
 	public Ingredient create(Ingredient i) {
 		return ingredientRepository.save(i);
 	}
 
+	
+	@Override
 	public List<Ingredient> findAll() {
 		return ingredientRepository.findAll();
 	}
 
+	@Override
 	public ResponseEntity<Ingredient> read(Long id) {
 		Optional<Ingredient> i = ingredientRepository.findById(id);
 		return i.isPresent() ? ResponseEntity.ok().body(i.get()) : ResponseEntity.notFound().build();
 	}
 	
+	@Override
 	public String update(Ingredient resource, Long id) {
 		Optional<Ingredient> i = ingredientRepository.findById(id);
 		if(i.get().getId() == id) {
@@ -39,6 +44,7 @@ public class IngredientServiceImp implements IngredientService {
 		}
 	}
 	
+	@Override
 	public String delete(Long id) {
 		ingredientRepository.deleteById(id);
 		return "Your ingredient has been deleted.";

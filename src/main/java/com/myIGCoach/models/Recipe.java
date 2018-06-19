@@ -40,8 +40,9 @@ public class Recipe extends Ingredient {
 	private List<QuantityRecipe> listOfIngredients = new ArrayList<>();
 	
 	// link between a recipe and a meal
-		@OneToMany(mappedBy = "recipe")
-		private List<Meal> listOfMeals = new ArrayList<>();
+//@JsonManagedReference
+		/*@OneToOne(mappedBy = "recipe")
+		private Meal meal;*/
 		
 		
 		
@@ -63,18 +64,4 @@ public class Recipe extends Ingredient {
 			this.listOfIngredients = listOfIngredients;
 		}
 
-		/**
-		 * @return the listOfMeals
-		 */
-		public List<Meal> getListOfMeals() {
-			return listOfMeals;
-		}
-
-		/**
-		 * @param listOfMeals the listOfMeals to set
-		 */
-		public void setListOfMeals(List<Meal> listOfMeals) {
-			this.listOfMeals = listOfMeals;
-		}
-		
 }

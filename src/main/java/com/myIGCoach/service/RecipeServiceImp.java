@@ -18,19 +18,23 @@ public class RecipeServiceImp implements RecipeService {
 	@Inject
 	RecipeRepository recipeRepository;
 	
+	@Override
 	public List<Recipe> findAll() {
 		return recipeRepository.findAll();
 	}
 	
+	@Override
 	public Recipe create(Recipe r) {
 		return recipeRepository.save(r);
 	}
 	
+	@Override
 	public ResponseEntity<Recipe> read(Long id) {
 		Optional<Recipe> r = recipeRepository.findById(id);
 		return r.isPresent() ? ResponseEntity.ok().body(r.get()) : ResponseEntity.notFound().build();
 	}
 	
+	@Override
 	public String update(Recipe resource, Long id) {
 		Optional<Recipe> r = recipeRepository.findById(id);
 		if(r.get().getId() == id) {
@@ -39,6 +43,12 @@ public class RecipeServiceImp implements RecipeService {
 		}else {
 			return "Update impossible because this recipe does not exist.";
 		}
+	}
+	
+	@Override
+	public String delete(Long id) {
+		recipeRepository.deleteById(id);
+		return "Your recipe has been deleted.";
 	}
 
 }

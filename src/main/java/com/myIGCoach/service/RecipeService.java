@@ -16,5 +16,6 @@ public interface RecipeService {
 	public Recipe create(Recipe r);
 	public ResponseEntity<Recipe> read(Long id);
 	public String update(Recipe r, Long id);
+	public String delete(Long id);
 
 }

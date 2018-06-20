@@ -17,5 +17,6 @@ public interface UserService {
 	public ResponseEntity<User> read(Long id);
 	public String update(User u, Long id);
 	public String delete(Long id);
+	public User findByFirstName(String name);
 
 }

@@ -51,4 +51,9 @@ public class UserServiceImp implements UserService {
 		return "Your user has been deleted.";
 	}
 
+	@Override
+	public User findByFirstName(String name) {
+		return userRepository.findByFirstName(name);
+	}
+
 }

@@ -3,6 +3,7 @@ package com.myIGCoach.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,8 +33,8 @@ public class User {
 	@Column(name = "email")
 	private String email;
 	// this is the relation Object between user who is owner of ingredient
-	@OneToMany(mappedBy = "owner")
-	@JsonManagedReference
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+	@JsonManagedReference(value = "ownerIngredient")
 	private List<Ingredient> ingredients = new ArrayList<>();
 	
 	/************************

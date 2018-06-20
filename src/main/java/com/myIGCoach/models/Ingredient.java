@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-//import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -17,34 +16,38 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
-//import javax.persistence.OneToOne;
-//import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-//@MappedSuperclass
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED) //this is the type of link between DB to reflect the heritage, here the choice is a join
+@Inheritance(strategy = InheritanceType.JOINED) // this is the type of link between DB to reflect the heritage, here the
+												// choice is a join
 @Table(name = "ingredients")
 public class Ingredient implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	// id of ingredient
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ingredient")
 	@SequenceGenerator(name = "ingredient", sequenceName = "ingredient_seq", allocationSize = 1)
 	private Long id;
 	// name of ingredient
-	@Column(name = "NAME")
+	@Column(name = "NAME", nullable = false)
 	private String name;
 	// url image of ingredient
 	@Column(name = "IMAGE")
 	private String urlImage;
+	// category of ingredient
+	// this is a relation with object category, in DB this link is saved in column
+	// fk_category
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonBackReference(value = "categoryIngredient")
+	@JoinColumn(name = "fk_category", foreignKey = @ForeignKey(name = "fk_category"), nullable = false)
+	private Category category;
+
 	// data of ingredient
 	@Column(name = "energy")
 	private double energy;
@@ -74,36 +77,61 @@ public class Ingredient implements Serializable {
 	private double glycemicIndex;
 	@Column(name = "glycemicLoad")
 	private double glycemicLoad;
-	
-	// category of ingredient
-	// this is a relation with object category, in DB this link is saved in column fk_category
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "fk_category", foreignKey = @ForeignKey(name = "fk_category"))
-	private Category category;
-	
+
 	// comment of owner of ingredient
 	@Column(name = "comment", nullable = true)
 	private String comment;
-	
-	// creator of ingredient since object user
+
+	// owner of ingredient since object user
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user"))
-	@JsonBackReference
+	@JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user"), nullable = false)
+	@JsonBackReference(value = "ownerIngredient")
 	private User owner;
-	
-	// this is the relation Object between Recipe who content some ingredients with quantity, this link is done by object QuantityRecipe 
-	//@Embedded
-	//@JsonManagedReference
+
+	// this attribute is to define if the ingredient is active or not
+	// default value true, but if it's false means that ingredient is not display
+	// but it can be use in a past recipe
+	@Column(name = "active", nullable = false)
+	private boolean active = true;
+
+	// this is the relation Object between Recipe who content some ingredients with
+	// quantity, this link is done by object QuantityRecipe
 	@OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
 	private List<QuantityRecipe> listOfRecipes = new ArrayList<>();
-	
-	/*@OneToOne(mappedBy = "id_recipe")
-	private Recipe linkRecipe;*/
-	
-	
+
 	/************************
 	 * GETTERS AND SETTERS
 	 ***********************/
+
+	/**
+	 * @return the active
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * @param active
+	 *            the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	/**
+	 * @return the listOfRecipes
+	 */
+	public List<QuantityRecipe> getListOfRecipes() {
+		return listOfRecipes;
+	}
+
+	/**
+	 * @param listOfRecipes
+	 *            the listOfRecipes to set
+	 */
+	public void setListOfRecipes(List<QuantityRecipe> listOfRecipes) {
+		this.listOfRecipes = listOfRecipes;
+	}
 
 	/**
 	 * @return the id
@@ -113,7 +141,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
@@ -127,7 +156,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param name the name to set
+	 * @param name
+	 *            the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -141,7 +171,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param urlImage the urlImage to set
+	 * @param urlImage
+	 *            the urlImage to set
 	 */
 	public void setUrlImage(String urlImage) {
 		this.urlImage = urlImage;
@@ -155,7 +186,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param energy the energy to set
+	 * @param energy
+	 *            the energy to set
 	 */
 	public void setEnergy(double energy) {
 		this.energy = energy;
@@ -169,7 +201,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param water the water to set
+	 * @param water
+	 *            the water to set
 	 */
 	public void setWater(double water) {
 		this.water = water;
@@ -183,7 +216,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param protein the protein to set
+	 * @param protein
+	 *            the protein to set
 	 */
 	public void setProtein(double protein) {
 		this.protein = protein;
@@ -197,7 +231,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param glucid the glucid to set
+	 * @param glucid
+	 *            the glucid to set
 	 */
 	public void setGlucid(double glucid) {
 		this.glucid = glucid;
@@ -211,7 +246,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param lipid the lipid to set
+	 * @param lipid
+	 *            the lipid to set
 	 */
 	public void setLipid(double lipid) {
 		this.lipid = lipid;
@@ -225,7 +261,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param sugar the sugar to set
+	 * @param sugar
+	 *            the sugar to set
 	 */
 	public void setSugar(double sugar) {
 		this.sugar = sugar;
@@ -239,7 +276,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param amidon the amidon to set
+	 * @param amidon
+	 *            the amidon to set
 	 */
 	public void setAmidon(double amidon) {
 		this.amidon = amidon;
@@ -253,7 +291,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param fiber the fiber to set
+	 * @param fiber
+	 *            the fiber to set
 	 */
 	public void setFiber(double fiber) {
 		this.fiber = fiber;
@@ -267,7 +306,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param unsaturedFattyAcides the unsaturedFattyAcides to set
+	 * @param unsaturedFattyAcides
+	 *            the unsaturedFattyAcides to set
 	 */
 	public void setUnsaturedFattyAcides(double unsaturedFattyAcides) {
 		this.unsaturedFattyAcides = unsaturedFattyAcides;
@@ -281,7 +321,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param monoUnsaturedFattyAcides the monoUnsaturedFattyAcides to set
+	 * @param monoUnsaturedFattyAcides
+	 *            the monoUnsaturedFattyAcides to set
 	 */
 	public void setMonoUnsaturedFattyAcides(double monoUnsaturedFattyAcides) {
 		this.monoUnsaturedFattyAcides = monoUnsaturedFattyAcides;
@@ -295,7 +336,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param polyUnsaturedFattyAcides the polyUnsaturedFattyAcides to set
+	 * @param polyUnsaturedFattyAcides
+	 *            the polyUnsaturedFattyAcides to set
 	 */
 	public void setPolyUnsaturedFattyAcides(double polyUnsaturedFattyAcides) {
 		this.polyUnsaturedFattyAcides = polyUnsaturedFattyAcides;
@@ -309,7 +351,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param salt the salt to set
+	 * @param salt
+	 *            the salt to set
 	 */
 	public void setSalt(double salt) {
 		this.salt = salt;
@@ -323,7 +366,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param glycemicIndex the glycemicIndex to set
+	 * @param glycemicIndex
+	 *            the glycemicIndex to set
 	 */
 	public void setGlycemicIndex(double glycemicIndex) {
 		this.glycemicIndex = glycemicIndex;
@@ -337,7 +381,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param glycemicLoad the glycemicLoad to set
+	 * @param glycemicLoad
+	 *            the glycemicLoad to set
 	 */
 	public void setGlycemicLoad(double glycemicLoad) {
 		this.glycemicLoad = glycemicLoad;
@@ -351,7 +396,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param category the category to set
+	 * @param category
+	 *            the category to set
 	 */
 	public void setCategory(Category category) {
 		this.category = category;
@@ -365,7 +411,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param comment the comment to set
+	 * @param comment
+	 *            the comment to set
 	 */
 	public void setComment(String comment) {
 		this.comment = comment;
@@ -379,7 +426,8 @@ public class Ingredient implements Serializable {
 	}
 
 	/**
-	 * @param owner the owner to set
+	 * @param owner
+	 *            the owner to set
 	 */
 	public void setOwner(User owner) {
 		this.owner = owner;

@@ -3,7 +3,6 @@ package com.myIGCoach.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +15,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -38,17 +36,18 @@ public class Category {
 	// this is the id of parent of this category and it's saved in DB with a column 'fk_parent'
 	@ManyToOne
 	@JoinColumn(name = "fk_parent")
-	@JsonBackReference
+	@JsonBackReference(value = "parentId")
 	//@JsonManagedReference
 	private Category parent;
 	// this is the link of parent with child, this relation exist in Object but in DB it's the link with column 'fk_parent' 
 	@OneToMany(mappedBy = "parent")
-	@JsonManagedReference
+	@JsonManagedReference(value = "parentId")
 	//@JsonBackReference
 	private List<Category> listOfChilds = new ArrayList<>();
 	
 	// this is the relation Object between category and ingredient
 	@OneToMany(mappedBy = "category")
+	@JsonManagedReference(value = "categoryIngredient")
 	private List<Ingredient> listOfIngredient = new ArrayList<>();
 	
 	/************************

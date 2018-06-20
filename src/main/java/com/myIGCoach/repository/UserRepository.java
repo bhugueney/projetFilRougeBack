@@ -10,5 +10,6 @@ import com.myIGCoach.models.User;
 @Repository
 @Named
 public interface UserRepository extends JpaRepository<User, Long>{
+	public User findByFirstName(String name);
 
 }

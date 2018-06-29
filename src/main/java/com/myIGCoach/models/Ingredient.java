@@ -21,12 +21,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED) // this is the type of link between DB to reflect the heritage, here the
-												// choice is a join
+// this is the type of link between DB to reflect the heritage, here the choice
+// is a join
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "ingredients")
 public class Ingredient implements Serializable {
+	// used because this class is serialisable to do the foreignkey and primary key
+	// for QuantityRecipe class
 	private static final long serialVersionUID = 1L;
 
 	// id of ingredient
@@ -97,6 +101,7 @@ public class Ingredient implements Serializable {
 	// this is the relation Object between Recipe who content some ingredients with
 	// quantity, this link is done by object QuantityRecipe
 	@OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<QuantityRecipe> listOfRecipes = new ArrayList<>();
 
 	/************************

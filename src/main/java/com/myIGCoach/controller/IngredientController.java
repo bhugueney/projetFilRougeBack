@@ -2,7 +2,6 @@ package com.myIGCoach.controller;
 
 import java.util.List;
 
-
 import javax.inject.Inject;
 
 import org.springframework.http.ResponseEntity;
@@ -17,32 +16,34 @@ import org.springframework.web.bind.annotation.RestController;
 import com.myIGCoach.models.Ingredient;
 import com.myIGCoach.service.IngredientService;
 
-
 /***************************************************
  ***************************************************
-// TODO SPRING SECURITY ON PATH AND ON METHODS 
-// TODO method to list only users's ingredients
-// TODO method to list ingredients since a category
+ * TODO SPRING SECURITY ON PATH AND ON METHODS
+ * TODO service to list only standard ingredients (admin)
+ * TODO service to list ingredients since a category
  ***************************************************
-***************************************************/
+ ***************************************************/
 
 @RestController
+@RequestMapping("/ingredients")
 public class IngredientController {
 	@Inject
-	IngredientService ingredientService;
-	
+	private IngredientService ingredientService;
+
 	/**
 	 * Request POST to save an ingredient
 	 * 
 	 * @param i:
 	 *            an ingredient
+	 * @param userId:
+	 *            user id do the request
 	 * @return this ingredient if it's OK or null it's KO or Internet server error
 	 *         if there is a problem to save
 	 */
-	@RequestMapping(value = "/ingredient", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public Ingredient create(@RequestBody Ingredient i) {
-		return ingredientService.create(i);
+	public Ingredient create(@RequestBody Ingredient i, @RequestParam("userId") Long userId) {
+		return ingredientService.create(i, userId);
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class IngredientController {
 	 *            this is the user id to do the request
 	 * @return the global list that contains basics ingredients & user's ingredients
 	 */
-	@RequestMapping(value = "/ingredients", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public List<Ingredient> findAll(@RequestParam("userId") Long id) {
 		return ingredientService.findAll(id);
@@ -67,7 +68,7 @@ public class IngredientController {
 	 *            : contains the id of user who do the request
 	 * @return the details of ingredient
 	 */
-	@RequestMapping(value = "ingredient/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<Ingredient> read(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
 		return ingredientService.read(id, userId);
@@ -86,7 +87,7 @@ public class IngredientController {
 	 * @return this ingredient if it's OK or null it's KO or Internet server error
 	 *         if there is a problem to save
 	 */
-	@RequestMapping(value = "ingredient/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public Ingredient update(@PathVariable("id") Long id, @RequestBody Ingredient resource,
 			@RequestParam("userId") Long userId) {
@@ -103,7 +104,7 @@ public class IngredientController {
 	 *            contains the id of user who do the request
 	 * @return a string that inform about result of this request
 	 */
-	@RequestMapping(value = "/ingredient/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public String delete(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
 		return ingredientService.delete(id, userId);

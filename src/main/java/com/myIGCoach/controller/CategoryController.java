@@ -9,46 +9,97 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myIGCoach.models.Category;
 import com.myIGCoach.service.CategoryService;
 
+/**********************************************************************
+ **********************************************************************
+ * TODO SPRING SECURITY ON PATH AND ON METHODS
+ * TODO service to list only category of level 1
+ **********************************************************************
+ **********************************************************************/
+
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
 	@Inject
 	private CategoryService categoryService;
-	
+
+	// TODO SECURITY CONTROL TO RESTRICT THIS AT ROLE_ADMIN
+	/**
+	 * method to save a new category, only authorised at ROLE_ADMIN
+	 * 
+	 * @param c:
+	 *            new category
+	 * @param userId:
+	 *            user id do the request
+	 * @return this category if it's OK or null it's not, or an Internet server
+	 *         error
+	 */
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	public Category create(@RequestBody Category c, @RequestParam("userId") Long userId) {
+		return categoryService.create(c, userId);
+	}
+
+	/**
+	 * method to list all categories
+	 * 
+	 * @return all categories
+	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public List<Category> findAll() {
 		return categoryService.findAll();
 	}
-	
+
+	/**
+	 * method to see details about a category
+	 * 
+	 * @param id:
+	 *            category id
+	 * @return informations about this category
+	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public ResponseEntity<Category> read(@PathVariable("id") Long id) {
 		return categoryService.read(id);
 	}
-	
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	public Category create(@RequestBody Category c) {
-		return categoryService.create(c);
-	}
-	
+
+	/**
+	 * method to update a category only if user have a ROLE_ADMIN
+	 * 
+	 * @param id:
+	 *            category id
+	 * @param c:
+	 *            category with new informations
+	 * @param userId:
+	 *            user id do the request
+	 * @return string about the result
+	 */
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
-	public String update(@PathVariable("id") Long id, @RequestBody Category c) {
-		return categoryService.update(c, id);
+	public String update(@PathVariable("id") Long id, @RequestBody Category c, @RequestParam("userId") Long userId) {
+		return categoryService.update(c, id, userId);
 	}
-	
+
+	/**
+	 * method to delete a category only if user have a ROLE_ADMIN
+	 * 
+	 * @param id:
+	 *            category id
+	 * @param userId:
+	 *            user id do the request
+	 * @return string about the result
+	 */
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
-	public String delete(@PathVariable("id") Long id) {
-		return categoryService.delete(id);
+	public String delete(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
+		return categoryService.delete(id, userId);
 	}
 
 }

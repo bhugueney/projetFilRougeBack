@@ -12,10 +12,19 @@ import com.myIGCoach.models.Meal;
 @Service
 @Named
 public interface MealService {
-	public List<Meal> findAll();
-	public Meal create(Meal m);
-	public ResponseEntity<Meal> read(Long id);
-	public String update(Meal m, Long id);
-	public String delete(Long id);
+	// method to save meal
+	public Meal create(Meal m, Long userId);
+
+	// method to list meals of user
+	public List<Meal> findAll(Long userId);
+
+	// method to display meal details if user is owner
+	public ResponseEntity<Meal> read(Long id, Long userId);
+
+	// method to update a meal if user is owner
+	public String update(Meal m, Long id, Long userId);
+
+	// method to remove a meal if user is owner
+	public String delete(Long id, Long userId);
 
 }

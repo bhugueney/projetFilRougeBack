@@ -1,5 +1,6 @@
 package com.myIGCoach.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,21 +12,47 @@ import org.springframework.http.ResponseEntity;
 import com.myIGCoach.models.Ingredient;
 import com.myIGCoach.models.User;
 import com.myIGCoach.repository.IngredientRepository;
+import com.myIGCoach.repository.MealRepository;
+import com.myIGCoach.repository.RecipeRepository;
+import com.myIGCoach.repository.UserRepository;
 import com.myIGCoach.tools.CheckList;
+
+/*********************************************************************
+ *********************************************************************
+ * TODO the exception extract when user is an admin in findAll method
+ * TODO the exception extract when user is an admin in read method
+ *********************************************************************
+ ********************************************************************/
 
 @Named
 public class IngredientServiceImp implements IngredientService {
 	@Inject
-	IngredientRepository ingredientRepository;
+	private IngredientRepository ingredientRepository;
 	@Inject
-	UserService userService;
+	private RecipeRepository recipeRepository;
+	@Inject
+	private RecipeService recipeService;
+	@Inject
+	private MealRepository mealRepository;
+	@Inject
+	private MealService mealService;
+	@Inject
+	private UserRepository userRepository;
+	@Inject
+	private CheckList checkList;
 
 	/**
-	 * this method make check before to save a new ingredient
+	 * method to create an ingredient
+	 * 
+	 * @param i:
+	 *            an ingredient
+	 * @param userId:
+	 *            user id do the request return ingredient created or null or
+	 *            internet server error
 	 */
 	@Override
-	public Ingredient create(Ingredient i) {
-		boolean check = CheckList.checkIngredient(i);
+	public Ingredient create(Ingredient i, Long userId) {
+		boolean check = checkList.checkNewIngredient(i, userId);
 		if (check) {
 			return ingredientRepository.save(i);
 		} else {
@@ -34,42 +61,77 @@ public class IngredientServiceImp implements IngredientService {
 	}
 
 	/**
-	 * this method list the basics ingredients (admin's ingredient) and add the
-	 * user's ingredient that do request. Result : the global list of ingredients
-	 * that user can be use
+	 * method to list basics ingredients and ingredients of user
+	 * 
+	 * @param id:
+	 *            user id do the request return list of ingredients or null or
+	 *            internet server error
 	 */
 	@Override
 	public List<Ingredient> findAll(Long id) {
-		User admin = userService.findByFirstName("ADMIN");
-		List<Ingredient> list = ingredientRepository.findByOwnerIdAndActiveIsTrue(admin.getId());
-		list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(id));
+		// TODO the exception extract when user is an admin
+		List<Ingredient> list = new ArrayList<>();
+		if (checkList.checkUserAdmin(id)) {
+			list = ingredientRepository.findAll();
+		} else {
+			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
+			for (User user : admin) {
+				list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(user.getId()));
+			}
+			list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(id));
+		}
 		return list;
 	}
 
 	/**
-	 * this method control that the user is the owner of ingredient or if it's a
-	 * basic ingredient. If it's OK and the ingredient is active to display, we done
-	 * the details of it
+	 * method to read informations about a meal
+	 * 
+	 * @param id:
+	 *            ingredient id
+	 * @param userId:
+	 *            user id do the request return the informations about it
 	 */
 	@Override
 	public ResponseEntity<Ingredient> read(Long id, Long userId) {
-		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
+		// TODO the exception extract when user is an admin
+		Optional<Ingredient> i = null;
+		if (checkList.checkUserAdmin(userId)) {
+			i = ingredientRepository.findByIdAndActiveIsTrue(id);
+		} else {
+			i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
+		}
 		if (!i.isPresent()) {
-			User admin = userService.findByFirstName("ADMIN");
-			i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, admin.getId());
+			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
+			for (User user : admin) {
+				i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, user.getId());
+				if (i.isPresent()) {
+					return ResponseEntity.ok().body(i.get());
+				}
+			}
 		}
 		return i.isPresent() ? ResponseEntity.ok().body(i.get()) : ResponseEntity.notFound().build();
 	}
 
 	/**
-	 * this method control that the user is the owner of ingredient before to make
-	 * the change. And check the new data of this ingredient before to save
+	 * method to update an ingredient if user is owner of it
+	 * 
+	 * @param id:
+	 *            ingredient id
+	 * @param resource:
+	 *            ingredient with new informations
+	 * @param userId:
+	 *            user id do the request return ingredient updated or null or
+	 *            internet server error
 	 */
 	@Override
 	public Ingredient update(Long id, Ingredient resource, Long userId) {
+		if (resource.getOwner() == null) {
+			return null;
+		}
 		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
-		if (i.get().getId() == id && i.get().getOwner().getId() == userId) {
-			boolean check = CheckList.checkIngredient(resource);
+		if (i.isPresent() && i.get().getId() == resource.getId()
+				&& i.get().getOwner().getId() == resource.getOwner().getId()) {
+			boolean check = checkList.checkIngredientInformations(resource, userId);
 			if (check) {
 				return ingredientRepository.save(resource);
 			} else {
@@ -81,21 +143,30 @@ public class IngredientServiceImp implements IngredientService {
 	}
 
 	/**
-	 * this method control that the user is the owner of ingredient before to remove it.
-	 * If the ingredient is used in a recipe, it's just active off.
-	 * if it's not used, it's removed definitely 
+	 * method to delete an ingredient if user is owner of it
+	 * 
+	 * @param id:
+	 *            ingredient id
+	 * @param userId:
+	 *            user id do the request return string about the result
 	 */
 	@Override
 	public String delete(Long id, Long userId) {
-		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
-		if (i.get().getId() == id && i.get().getOwner().getId() == userId) {
-			if (i.get().getListOfRecipes().isEmpty()) {
-				ingredientRepository.deleteById(id);
-				return "Your ingredient has been removed.";
+		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerId(id, userId);
+		if (i.isPresent()) {
+			if (mealRepository.findById(i.get().getId()).isPresent()) {
+				return mealService.delete(id, userId);
+			} else if (recipeRepository.findById(i.get().getId()).isPresent()) {
+				return recipeService.delete(id, userId);
 			} else {
-				i.get().setActive(false);
-				ingredientRepository.save(i.get());
-				return "Your ingredient has been disconnected";
+				if (i.get().getListOfRecipes().isEmpty()) {
+					ingredientRepository.deleteById(id);
+					return "Your ingredient has been removed.";
+				} else {
+					i.get().setActive(false);
+					ingredientRepository.save(i.get());
+					return "Your ingredient has been disconnected";
+				}
 			}
 		} else {
 			return "You couldn't remove this ingredient.";

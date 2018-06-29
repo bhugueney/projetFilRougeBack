@@ -8,60 +8,43 @@ import javax.persistence.CascadeType;
 //import javax.persistence.CascadeType;
 //import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-//@MappedSuperclass
 @Entity(name = "Recipe")
-//@PrimaryKeyJoinColumn(name="id")
+// this is the type of link between DB to reflect the heritage, here the choice
+// is a join
 @Inheritance(strategy = InheritanceType.JOINED)
-//@Table(name = "recipes")
 public class Recipe extends Ingredient {
+	// used because this class is serialisable to do the foreignkey and primary key
+	// for QuantityRecipe class
 	private static final long serialVersionUID = 1L;
-	
-	/*@Id
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_recipe", nullable = false, foreignKey = @ForeignKey(name = "id_recipe"))
-	private Ingredient recipeInIngredient;*/
 
 	// a recipe contend a list of ingredients with their quantity
-	//@Embedded
-	@JsonManagedReference
-	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference(value = "recipe")
+	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
 	private List<QuantityRecipe> listOfIngredients = new ArrayList<>();
-	
-	// link between a recipe and a meal
-//@JsonManagedReference
-		/*@OneToOne(mappedBy = "recipe")
-		private Meal meal;*/
-		
-		
-		
-		/************************
-		 * GETTERS AND SETTERS
-		 ***********************/
 
-		/**
-		 * @return the listOfIngredients
-		 */
-		public List<QuantityRecipe> getListOfIngredients() {
-			return listOfIngredients;
-		}
+	/************************
+	 * GETTERS AND SETTERS
+	 ***********************/
 
-		/**
-		 * @param listOfIngredients the listOfIngredients to set
-		 */
-		public void setListOfIngredients(List<QuantityRecipe> listOfIngredients) {
-			this.listOfIngredients = listOfIngredients;
-		}
+	/**
+	 * @return the listOfIngredients
+	 */
+	public List<QuantityRecipe> getListOfIngredients() {
+		return listOfIngredients;
+	}
+
+	/**
+	 * @param listOfIngredients
+	 *            the listOfIngredients to set
+	 */
+	public void setListOfIngredients(List<QuantityRecipe> listOfIngredients) {
+		this.listOfIngredients = listOfIngredients;
+	}
 
 }

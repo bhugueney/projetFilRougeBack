@@ -12,10 +12,19 @@ import com.myIGCoach.models.Recipe;
 @Named
 @Service
 public interface RecipeService {
-	public List<Recipe> findAll();
-	public Recipe create(Recipe r);
-	public ResponseEntity<Recipe> read(Long id);
-	public String update(Recipe r, Long id);
-	public String delete(Long id);
+	// method to save a new recipe
+	public Recipe create(Recipe r, Long userId);
+
+	// method to list all Recipe of user
+	public List<Recipe> findAll(Long userId);
+
+	// method to display details of a recipe
+	public ResponseEntity<Recipe> read(Long id, Long userId);
+
+	// method to update a recipe only if user is recipe's owner
+	public String update(Recipe r, Long id, Long userId);
+
+	// method to remove a recipe only if user is recipe's owner
+	public String delete(Long id, Long userId);
 
 }

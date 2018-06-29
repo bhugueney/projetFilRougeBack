@@ -1,7 +1,5 @@
 package com.myIGCoach.service;
 
-import java.util.List;
-
 import javax.inject.Named;
 
 import org.springframework.http.ResponseEntity;
@@ -12,11 +10,16 @@ import com.myIGCoach.models.User;
 @Service
 @Named
 public interface UserService {
-	public List<User> findAll();
+	// to save a new user
 	public User create(User u);
-	public ResponseEntity<User> read(Long id);
-	public String update(User u, Long id);
-	public String delete(Long id);
-	public User findByFirstName(String name);
+
+	// to have details about user
+	public ResponseEntity<User> read(Long userId);
+
+	// to update user's information (firstName, lastName or email)
+	public String update(Long userId, User u);
+
+	// to remove the user
+	public String delete(Long u, Long userId);
 
 }

@@ -1,7 +1,5 @@
 package com.myIGCoach.controller;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.springframework.http.ResponseEntity;
@@ -9,46 +7,82 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myIGCoach.models.User;
 import com.myIGCoach.service.UserService;
 
+/***************************************************
+ ***************************************************
+ * TODO SPRING SECURITY ON PATH AND ON METHODS
+ * TODO correction about method delete (meal including meal, recipe including recipe)
+ * TODO a control about method to delete when we want to delete an admin
+ * TODO service to change email
+ * TODO service to change password
+ * TODO service to list all users for admin only
+ ***************************************************
+ ***************************************************/
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 	@Inject
 	private UserService userService;
 
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public List<User> findAll() {
-		return userService.findAll();
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public ResponseEntity<User> read(@PathVariable("id") Long id) {
-		return userService.read(id);
-	}
-	
+	/**
+	 * method to create a user (default role = ROLE_USER)
+	 * 
+	 * @param u:
+	 *            a user
+	 * @return the user created or null if KO or internet server error
+	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	public User create(@RequestBody User u) {
 		return userService.create(u);
 	}
-	
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+
+	/**
+	 * method to see details about user
+	 * 
+	 * @param id:
+	 *            user id
+	 * @return details about user or null or internet server error
+	 */
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public String update(@PathVariable("id") Long id, @RequestBody User u) {
-		return userService.update(u, id);
+	public ResponseEntity<User> read(@RequestParam("userId") Long userId) {
+		return userService.read(userId);
 	}
-	
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+
+	/**
+	 * method to update the details of user (firstName, LastName)
+	 * 
+	 * @param id:
+	 *            user id
+	 * @param u:
+	 *            user with new informations
+	 * @return string about the result
+	 */
+	@RequestMapping(method = RequestMethod.PUT)
 	@ResponseBody
-	public String delete(@PathVariable("id") Long id) {
-		return userService.delete(id);
+	public String update(@RequestParam("userId") Long userId, @RequestBody User u) {
+		return userService.update(userId, u);
+	}
+
+	/**
+	 * method to delete a user
+	 * 
+	 * @param id:
+	 *            user id
+	 * @return string about the result
+	 */
+	@RequestMapping(value = "/{user}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public String delete(@PathVariable("user") Long u, @RequestParam("userId") Long userId) {
+		return userService.delete(u, userId);
 	}
 
 }

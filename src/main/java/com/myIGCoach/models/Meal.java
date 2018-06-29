@@ -4,38 +4,21 @@ import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonRootName;
 
 @Entity(name = "meals")
-//@Inheritance(strategy = InheritanceType.JOINED)
-//@Table(name = "meals")
 public class Meal extends Recipe {
+	// used because this class is serialisable to do the foreignkey (via recipe
+	// class) and primary key for QuantityRecipe class
 	private static final long serialVersionUID = 1L;
-	
+
 	// type of meal since MealType class
 	@Column(name = "mealType")
 	private MealType mealType;
-	
+
 	// date of meal
 	@Column(name = "date")
 	private Date date;
-	
-	
+
 	/************************
 	 * GETTERS AND SETTERS
 	 ***********************/
@@ -48,7 +31,8 @@ public class Meal extends Recipe {
 	}
 
 	/**
-	 * @param mealType the mealType to set
+	 * @param mealType
+	 *            the mealType to set
 	 */
 	public void setMealType(MealType mealType) {
 		this.mealType = mealType;
@@ -62,7 +46,8 @@ public class Meal extends Recipe {
 	}
 
 	/**
-	 * @param date the date to set
+	 * @param date
+	 *            the date to set
 	 */
 	public void setDate(Date date) {
 		this.date = date;

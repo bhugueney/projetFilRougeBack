@@ -43,9 +43,11 @@ public class UserServiceImp implements UserService {
 	@Override
 	public User create(User u) {
 		if (checkList.checkNewUser(u)) {
+			System.out.println("new User : " + u.getEmail());
 			u.setPassword(Integer.toString(u.getPassword().hashCode()));
 			return userRepository.save(u);
 		} else {
+			System.out.println(u.getEmail() + " is already existing.");
 			return null;
 		}
 	}

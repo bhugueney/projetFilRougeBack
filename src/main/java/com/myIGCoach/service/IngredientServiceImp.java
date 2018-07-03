@@ -66,14 +66,16 @@ public class IngredientServiceImp implements IngredientService {
 	 * @param id:
 	 *            user id do the request return list of ingredients or null or
 	 *            internet server error
+	 *            If null, only originals ingredient will be returned
 	 */
 	@Override
 	public List<Ingredient> findAll(Long id) {
-		// TODO the exception extract when user is an admin
 		List<Ingredient> list = new ArrayList<>();
 		if (checkList.checkUserAdmin(id)) {
+			// If user is an administrator, all ingredients are returned. 
 			list = ingredientRepository.findAll();
 		} else {
+			// If user is not an administrator, user's ingredients and basic ingredients (created by adminitrator) are returned.
 			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
 			for (User user : admin) {
 				list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(user.getId()));

@@ -22,7 +22,7 @@ public interface IngredientService {
 
 	// to list basics ingredients and ingredients of user
 	public List<Ingredient> findAll(Long id);
-
+	
 	// TODO method to list only users's ingredients
 
 	// TODO method to list ingredients since a category

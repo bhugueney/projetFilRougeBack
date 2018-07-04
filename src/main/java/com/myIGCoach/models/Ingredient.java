@@ -3,6 +3,7 @@ package com.myIGCoach.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -54,33 +55,33 @@ public class Ingredient implements Serializable {
 
 	// data of ingredient
 	@Column(name = "energy")
-	private double energy;
+	private Double energy;
 	@Column(name = "water")
-	private double water;
+	private Double water;
 	@Column(name = "protein")
-	private double protein;
+	private Double protein;
 	@Column(name = "glucid")
-	private double glucid;
+	private Double glucid;
 	@Column(name = "lipid")
-	private double lipid;
+	private Double lipid;
 	@Column(name = "sugar")
-	private double sugar;
+	private Double sugar;
 	@Column(name = "amidon")
-	private double amidon;
+	private Double amidon;
 	@Column(name = "fiber")
-	private double fiber;
+	private Double fiber;
 	@Column(name = "unsaturedFattyAcides")
-	private double unsaturedFattyAcides;
+	private Double unsaturedFattyAcides;
 	@Column(name = "monoUnsaturedFattyAcides")
-	private double monoUnsaturedFattyAcides;
+	private Double monoUnsaturedFattyAcides;
 	@Column(name = "polyUnsaturedFattyAcides")
-	private double polyUnsaturedFattyAcides;
+	private Double polyUnsaturedFattyAcides;
 	@Column(name = "salt")
-	private double salt;
+	private Double salt;
 	@Column(name = "glycemicIndex")
-	private double glycemicIndex;
+	private Double glycemicIndex;
 	@Column(name = "glycemicLoad")
-	private double glycemicLoad;
+	private Double glycemicLoad;
 
 	// comment of owner of ingredient
 	@Column(name = "comment", nullable = true)
@@ -103,6 +104,119 @@ public class Ingredient implements Serializable {
 	@OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<QuantityRecipe> listOfRecipes = new ArrayList<>();
+
+	/*************************
+	 * Constructors
+	 *************************/
+	public Ingredient() {
+		super();
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @param category
+	 * @param energy
+	 * @param water
+	 * @param protein
+	 * @param glucid
+	 * @param lipid
+	 * @param sugar
+	 * @param amidon
+	 * @param fiber
+	 * @param unsaturedFattyAcides
+	 * @param monoUnsaturedFattyAcides
+	 * @param polyUnsaturedFattyAcides
+	 * @param salt
+	 * @param glycemicIndex
+	 * @param glycemicLoad
+	 * @param owner
+	 * @param active
+	 */
+	public Ingredient(String name, Category category, Double energy, Double water, Double protein, Double glucid,
+			Double lipid, Double sugar, Double amidon, Double fiber, Double unsaturedFattyAcides,
+			Double monoUnsaturedFattyAcides, Double polyUnsaturedFattyAcides, Double salt, Double glycemicIndex,
+			Double glycemicLoad, User owner, boolean active) {
+		super();
+		this.name = name;
+		this.category = category;
+		this.energy = energy;
+		this.water = water;
+		this.protein = protein;
+		this.glucid = glucid;
+		this.lipid = lipid;
+		this.sugar = sugar;
+		this.amidon = amidon;
+		this.fiber = fiber;
+		this.unsaturedFattyAcides = unsaturedFattyAcides;
+		this.monoUnsaturedFattyAcides = monoUnsaturedFattyAcides;
+		this.polyUnsaturedFattyAcides = polyUnsaturedFattyAcides;
+		this.salt = salt;
+		this.glycemicIndex = glycemicIndex;
+		this.glycemicLoad = glycemicLoad;
+		this.owner = owner;
+		this.active = active;
+	}
+
+	/**
+	 * 
+	 * @param updatingData
+	 */
+	public void updateWithIngredientAttributes(Ingredient updatingData) {
+		this.name = updatingData.name;
+		this.category = updatingData.category;
+		this.energy = updatingData.energy;
+		this.water = updatingData.water;
+		this.protein = updatingData.protein;
+		this.glucid = updatingData.glucid;
+		this.lipid = updatingData.lipid;
+		this.sugar = updatingData.sugar;
+		this.amidon = updatingData.amidon;
+		this.fiber = updatingData.fiber;
+		this.unsaturedFattyAcides = updatingData.unsaturedFattyAcides;
+		this.monoUnsaturedFattyAcides = updatingData.monoUnsaturedFattyAcides;
+		this.polyUnsaturedFattyAcides = updatingData.polyUnsaturedFattyAcides;
+		this.salt = updatingData.salt;
+		this.glycemicIndex = updatingData.glycemicIndex;
+		this.glycemicLoad = updatingData.glycemicLoad;
+		this.active = updatingData.active;
+	}
+
+	public boolean equals(Ingredient input) {
+		boolean result = false;
+
+		if (input == null) {
+			return result;
+		}
+
+		result = ( Objects.equals(this.name, input.name));
+		result =  result && (
+				(this.category == null && input.category == null ) ||
+				(Objects.equals(this.category.getId(), input.category.getId()))
+				);
+		
+		result = result && (Objects.equals(this.energy, input.energy));
+		result = result && (Objects.equals(this.water, input.water));
+		result = result && (Objects.equals(this.protein, input.protein));
+		result = result && (Objects.equals(this.glucid, input.glucid));
+		result = result && (Objects.equals(this.glucid, input.glucid));
+		result = result && (Objects.equals(this.lipid, input.lipid));
+		result = result && (Objects.equals(this.sugar, input.sugar));
+		result = result && (Objects.equals(this.amidon, input.amidon));
+		result = result && (Objects.equals(this.fiber, input.fiber));
+		result = result && (Objects.equals(this.unsaturedFattyAcides, input.unsaturedFattyAcides));
+		result = result && (Objects.equals(this.monoUnsaturedFattyAcides, input.monoUnsaturedFattyAcides));
+		result = result && (Objects.equals(this.polyUnsaturedFattyAcides, input.polyUnsaturedFattyAcides));
+		result = result && (Objects.equals(this.salt, input.salt));
+		result = result && (Objects.equals(this.glycemicIndex, input.glycemicIndex));
+		result = result && (Objects.equals(this.glycemicLoad, input.glycemicLoad));
+		result = result && (Objects.equals(this.active, input.active));
+		
+		return result;
+		
+	}
+	
+	
 
 	/************************
 	 * GETTERS AND SETTERS
@@ -186,7 +300,7 @@ public class Ingredient implements Serializable {
 	/**
 	 * @return the energy
 	 */
-	public double getEnergy() {
+	public Double getEnergy() {
 		return energy;
 	}
 
@@ -194,14 +308,14 @@ public class Ingredient implements Serializable {
 	 * @param energy
 	 *            the energy to set
 	 */
-	public void setEnergy(double energy) {
+	public void setEnergy(Double energy) {
 		this.energy = energy;
 	}
 
 	/**
 	 * @return the water
 	 */
-	public double getWater() {
+	public Double getWater() {
 		return water;
 	}
 
@@ -209,14 +323,14 @@ public class Ingredient implements Serializable {
 	 * @param water
 	 *            the water to set
 	 */
-	public void setWater(double water) {
+	public void setWater(Double water) {
 		this.water = water;
 	}
 
 	/**
 	 * @return the protein
 	 */
-	public double getProtein() {
+	public Double getProtein() {
 		return protein;
 	}
 
@@ -224,14 +338,14 @@ public class Ingredient implements Serializable {
 	 * @param protein
 	 *            the protein to set
 	 */
-	public void setProtein(double protein) {
+	public void setProtein(Double protein) {
 		this.protein = protein;
 	}
 
 	/**
 	 * @return the glucid
 	 */
-	public double getGlucid() {
+	public Double getGlucid() {
 		return glucid;
 	}
 
@@ -239,14 +353,14 @@ public class Ingredient implements Serializable {
 	 * @param glucid
 	 *            the glucid to set
 	 */
-	public void setGlucid(double glucid) {
+	public void setGlucid(Double glucid) {
 		this.glucid = glucid;
 	}
 
 	/**
 	 * @return the lipid
 	 */
-	public double getLipid() {
+	public Double getLipid() {
 		return lipid;
 	}
 
@@ -254,14 +368,14 @@ public class Ingredient implements Serializable {
 	 * @param lipid
 	 *            the lipid to set
 	 */
-	public void setLipid(double lipid) {
+	public void setLipid(Double lipid) {
 		this.lipid = lipid;
 	}
 
 	/**
 	 * @return the sugar
 	 */
-	public double getSugar() {
+	public Double getSugar() {
 		return sugar;
 	}
 
@@ -269,14 +383,14 @@ public class Ingredient implements Serializable {
 	 * @param sugar
 	 *            the sugar to set
 	 */
-	public void setSugar(double sugar) {
+	public void setSugar(Double sugar) {
 		this.sugar = sugar;
 	}
 
 	/**
 	 * @return the amidon
 	 */
-	public double getAmidon() {
+	public Double getAmidon() {
 		return amidon;
 	}
 
@@ -284,14 +398,14 @@ public class Ingredient implements Serializable {
 	 * @param amidon
 	 *            the amidon to set
 	 */
-	public void setAmidon(double amidon) {
+	public void setAmidon(Double amidon) {
 		this.amidon = amidon;
 	}
 
 	/**
 	 * @return the fiber
 	 */
-	public double getFiber() {
+	public Double getFiber() {
 		return fiber;
 	}
 
@@ -299,14 +413,14 @@ public class Ingredient implements Serializable {
 	 * @param fiber
 	 *            the fiber to set
 	 */
-	public void setFiber(double fiber) {
+	public void setFiber(Double fiber) {
 		this.fiber = fiber;
 	}
 
 	/**
 	 * @return the unsaturedFattyAcides
 	 */
-	public double getUnsaturedFattyAcides() {
+	public Double getUnsaturedFattyAcides() {
 		return unsaturedFattyAcides;
 	}
 
@@ -314,14 +428,14 @@ public class Ingredient implements Serializable {
 	 * @param unsaturedFattyAcides
 	 *            the unsaturedFattyAcides to set
 	 */
-	public void setUnsaturedFattyAcides(double unsaturedFattyAcides) {
+	public void setUnsaturedFattyAcides(Double unsaturedFattyAcides) {
 		this.unsaturedFattyAcides = unsaturedFattyAcides;
 	}
 
 	/**
 	 * @return the monoUnsaturedFattyAcides
 	 */
-	public double getMonoUnsaturedFattyAcides() {
+	public Double getMonoUnsaturedFattyAcides() {
 		return monoUnsaturedFattyAcides;
 	}
 
@@ -329,14 +443,14 @@ public class Ingredient implements Serializable {
 	 * @param monoUnsaturedFattyAcides
 	 *            the monoUnsaturedFattyAcides to set
 	 */
-	public void setMonoUnsaturedFattyAcides(double monoUnsaturedFattyAcides) {
+	public void setMonoUnsaturedFattyAcides(Double monoUnsaturedFattyAcides) {
 		this.monoUnsaturedFattyAcides = monoUnsaturedFattyAcides;
 	}
 
 	/**
 	 * @return the polyUnsaturedFattyAcides
 	 */
-	public double getPolyUnsaturedFattyAcides() {
+	public Double getPolyUnsaturedFattyAcides() {
 		return polyUnsaturedFattyAcides;
 	}
 
@@ -344,14 +458,14 @@ public class Ingredient implements Serializable {
 	 * @param polyUnsaturedFattyAcides
 	 *            the polyUnsaturedFattyAcides to set
 	 */
-	public void setPolyUnsaturedFattyAcides(double polyUnsaturedFattyAcides) {
+	public void setPolyUnsaturedFattyAcides(Double polyUnsaturedFattyAcides) {
 		this.polyUnsaturedFattyAcides = polyUnsaturedFattyAcides;
 	}
 
 	/**
 	 * @return the salt
 	 */
-	public double getSalt() {
+	public Double getSalt() {
 		return salt;
 	}
 
@@ -359,14 +473,14 @@ public class Ingredient implements Serializable {
 	 * @param salt
 	 *            the salt to set
 	 */
-	public void setSalt(double salt) {
+	public void setSalt(Double salt) {
 		this.salt = salt;
 	}
 
 	/**
 	 * @return the glycemicIndex
 	 */
-	public double getGlycemicIndex() {
+	public Double getGlycemicIndex() {
 		return glycemicIndex;
 	}
 
@@ -374,14 +488,14 @@ public class Ingredient implements Serializable {
 	 * @param glycemicIndex
 	 *            the glycemicIndex to set
 	 */
-	public void setGlycemicIndex(double glycemicIndex) {
+	public void setGlycemicIndex(Double glycemicIndex) {
 		this.glycemicIndex = glycemicIndex;
 	}
 
 	/**
 	 * @return the glycemicLoad
 	 */
-	public double getGlycemicLoad() {
+	public Double getGlycemicLoad() {
 		return glycemicLoad;
 	}
 
@@ -389,7 +503,7 @@ public class Ingredient implements Serializable {
 	 * @param glycemicLoad
 	 *            the glycemicLoad to set
 	 */
-	public void setGlycemicLoad(double glycemicLoad) {
+	public void setGlycemicLoad(Double glycemicLoad) {
 		this.glycemicLoad = glycemicLoad;
 	}
 

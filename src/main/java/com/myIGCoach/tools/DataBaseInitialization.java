@@ -3,128 +3,216 @@ package com.myIGCoach.tools;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.inject.Inject;
+
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.stereotype.Component;
 
+import com.myIGCoach.models.Category;
+import com.myIGCoach.models.Ingredient;
+import com.myIGCoach.models.User;
+import com.myIGCoach.repository.CategoryRepository;
+import com.myIGCoach.repository.IngredientRepository;
+import com.myIGCoach.repository.UserRepository;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
-
-
 @Component
-public class DataBaseInitialization  {
+public class DataBaseInitialization implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static char CSV_SEPARATOR = ';';
 	private final static char EMPTY_FIELD = '-';
+
+	private final static String SYS_ADMIN_EMAIL = "pf1.fhg@gmail.com";
+
+	@Inject
+	private CategoryRepository categoryRepository;
+
+	@Inject
+	private IngredientRepository ingredientRepository;
+
+	@Inject
+	private UserRepository userRepository;
+
+	private static int categoriesAdded = 0;
 	
-	
+	/**
+	 * This method return an existing category or a new one, matching given criteria
+	 * 
+	 * @param categoryName
+	 *            : name of the category
+	 * @param parent
+	 *            : category parent.
+	 * @return : category matching given criteria
+	 */
+	private Category getCategory(String categoryName, Category parent) {
+
+		List<Category> existingCategories;
+		Category categoryToReturn;
+
+		if (parent == null) {
+			existingCategories = this.categoryRepository.findByName(categoryName);
+		} else {
+			existingCategories = this.categoryRepository.findByNameAndParent(categoryName, parent);
+		}
+
+		if (existingCategories == null || existingCategories.size() == 0) {
+			categoryToReturn = new Category();
+			categoryToReturn.setName(categoryName);
+			if (parent != null) {
+				categoryToReturn.setParent(parent);
+			}
+			categoriesAdded ++;
+			return this.categoryRepository.save(categoryToReturn);
+		}
+
+		return existingCategories.get(0);
+	}
+
+	/**
+	 * This function return a Double value regarding text value provided
+	 * 
+	 * @param fieldValue
+	 *            : String containing field value
+	 * @return : Null if fieldValue doesn't match a decimal value otherwise
+	 *         corresponding Double value
+	 */
+
+	private Double getDoubleValueFromField(String fieldValue) {
+		// RegExp used to check decimal value
+		final String d = "\\d+([,.]\\d*)?";
+
+		if (fieldValue == null || fieldValue.isEmpty() || fieldValue.equals(EMPTY_FIELD)) {
+			return null;
+		}
+
+		if (fieldValue.matches(d)) {
+			fieldValue = fieldValue.replace(',', '.');
+			return (new Double(fieldValue));
+		}
+
+		return null;
+	}
 
 	/**
 	 * Loads food data into Food table. Reads csv file to import food group data.
 	 * This function is used to import a multi column file as food items.
 	 * 
 	 * @param foodFileLocation
-	 *          the location of csv file to import
+	 *            the location of csv file to import
 	 */
 	private final void loadFoodTable(String foodFileLocation) {
 
 		CSVParser csvParser = new CSVParserBuilder().withSeparator(CSV_SEPARATOR).build();
 
-		try (CSVReader reader = new CSVReaderBuilder(new FileReader(foodFileLocation)).withCSVParser(csvParser).build()) {
-
-			final String d = "\\d+";
+		try (CSVReader reader = new CSVReaderBuilder(new FileReader(foodFileLocation)).withCSVParser(csvParser)
+				.build()) {
 
 			// Reading all file content into fileLineList.
 			List<String[]> fileLineList = reader.readAll();
 
 			/*
-			 * For each file line :
-			 * - check if each filled category if it exists
-			 *     - if a category is present, we get it
-			 *     - if a category is unknown, we create it and link it to previous one
-			 * - check existence of aliment (looking by name) 
-			 *     - if it is existing -> we update this aliment
-			 *     - if not, we create this aliment and link it to previous category
+			 * For each file line : - check if each filled category if it exists - if a
+			 * category is present, we get it - if a category is unknown, we create it and
+			 * link it to previous one - check existence of aliment (looking by name) - if
+			 * it is existing -> we update this aliment - if not, we create this aliment and
+			 * link it to previous category
 			 * 
 			 */
-			/*
-			List<Food> newFoodItemList = new ArrayList<>();
-			for (String[] fileLine : fileLineList) {
-				String groupFullHierarchy = "";
-				FoodGroup group;
-				
-				if (fileLine[2] != null && !fileLine[2].isEmpty() && !fileLine[2].equals("-")) {
-					groupFullHierarchy += fileLine[2];
-				}
-				
-				if (fileLine[1] != null && !fileLine[1].isEmpty() && !fileLine[1].equals("-")) {
-					groupFullHierarchy += fileLine[1];
-				}
-				
-				if (fileLine[0] != null && !fileLine[0].isEmpty() && !fileLine[0].equals("-")) {
-					groupFullHierarchy += fileLine[0];
-				}
-				
-				group = groupMap.get(groupFullHierarchy);
 
-				Food food = new Food(fileLine[3], group, null, fileLine[4].matches(d) ? new BigDecimal(fileLine[4]) : null,
-						fileLine[5].matches(d) ? new BigDecimal(fileLine[5]) : null,
-						fileLine[6].matches(d) ? new BigDecimal(fileLine[6]) : null,
-						fileLine[7].matches(d) ? new BigDecimal(fileLine[7]) : null,
-						fileLine[8].matches(d) ? new BigDecimal(fileLine[8]) : null,
-						fileLine[9].matches(d) ? new BigDecimal(fileLine[9]) : null,
-						fileLine[10].matches(d) ? new BigDecimal(fileLine[10]) : null,
-						fileLine[11].matches(d) ? new BigDecimal(fileLine[11]) : null,
-						fileLine[12].matches(d) ? new BigDecimal(fileLine[12]) : null,
-						fileLine[13].matches(d) ? new BigDecimal(fileLine[13]) : null,
-						fileLine[14].matches(d) ? new BigDecimal(fileLine[14]) : null,
-						fileLine[15].matches(d) ? new BigDecimal(fileLine[15]) : null,
-						fileLine[16].matches(d) ? new BigDecimal(fileLine[16]) : null,
-						fileLine[17].matches(d) ? new BigDecimal(fileLine[17]) : null,
-						fileLine[18].matches(d) ? new BigDecimal(fileLine[18]) : null,
-						fileLine[19].matches(d) ? new BigDecimal(fileLine[19]) : null,
-						fileLine[20].matches(d) ? new BigDecimal(fileLine[20]) : null,
-						fileLine[21].matches(d) ? new BigDecimal(fileLine[21]) : null,
-						fileLine[22].matches(d) ? new BigDecimal(fileLine[22]) : null,
-						fileLine[23].matches(d) ? new BigDecimal(fileLine[23]) : null,
-						fileLine[24].matches(d) ? new BigDecimal(fileLine[24]) : null,
-						fileLine[25].matches(d) ? new BigDecimal(fileLine[25]) : null,
-						fileLine[26].matches(d) ? new BigDecimal(fileLine[26]) : null,
-						fileLine[27].matches(d) ? new BigDecimal(fileLine[27]) : null,
-						fileLine[28].matches(d) ? new BigDecimal(fileLine[28]) : null,
-						fileLine[29].matches(d) ? new BigDecimal(fileLine[29]) : null,
-						fileLine[30].matches(d) ? new BigDecimal(fileLine[30]) : null,
-						fileLine[31].matches(d) ? new BigDecimal(fileLine[31]) : null,
-						fileLine[32].matches(d) ? new BigDecimal(fileLine[32]) : null,
-						fileLine[33].matches(d) ? new BigDecimal(fileLine[33]) : null,
-						fileLine[34].matches(d) ? new BigDecimal(fileLine[34]) : null,
-						fileLine[35].matches(d) ? new BigDecimal(fileLine[35]) : null,
-						fileLine[36].matches(d) ? new BigDecimal(fileLine[36]) : null,
-						fileLine[37].matches(d) ? new BigDecimal(fileLine[37]) : null,
-						fileLine[38].matches(d) ? new BigDecimal(fileLine[38]) : null,
-						fileLine[39].matches(d) ? new BigDecimal(fileLine[39]) : null,
-						fileLine[40].matches(d) ? new BigDecimal(fileLine[40]) : null,
-						fileLine[41].matches(d) ? new BigDecimal(fileLine[41]) : null,
-						fileLine[42].matches(d) ? new BigDecimal(fileLine[42]) : null);
+			Optional<User> userSearched = this.userRepository.findByEmail(SYS_ADMIN_EMAIL);
 
-				newFoodItemList.add(food);
+			int ingredientsToAdd = 0;
+			int ingredientsToUpdate = 0;
+			categoriesAdded = 0;
+
+			User sysAdmin = (userSearched.isPresent() ? userSearched.get() : null);
+
+			if (sysAdmin == null) {
+				System.err.println("sysAdmin user doesn't exist in database ! ");
+			} else {
+
+				System.out.println("Creation de la liste d'ingrédient");
+
+				List<Ingredient> ingredientList = new ArrayList<Ingredient>();
+
+				for (String[] fileLine : fileLineList) {
+
+					if (fileLine[IndexAlimentFile.IDX_NOM_ALIMENT] != null
+							&& !fileLine[IndexAlimentFile.IDX_NOM_ALIMENT].isEmpty()
+							&& !fileLine[IndexAlimentFile.IDX_NOM_ALIMENT].equals(EMPTY_FIELD)) {
+						// Process of aliment creation/update only if aliment name filled
+
+						// 3 first fields are definition of ingredient categories
+						Category previousCategory = null, currentCategory = null;
+						for (int iCategory = 0; iCategory <= 2; iCategory++) {
+							if (fileLine[iCategory] != null && !fileLine[iCategory].isEmpty()
+									&& !fileLine[iCategory].equals("-")) {
+								String categoryName = fileLine[iCategory];
+								currentCategory = getCategory(categoryName, previousCategory);								
+								previousCategory = currentCategory;
+							}
+						}
+
+						// Ingredient can't be created without a category
+						if (currentCategory != null) {
+
+							// Getting ingredient information from data file
+							Ingredient food = new Ingredient(fileLine[IndexAlimentFile.IDX_NOM_ALIMENT],
+									currentCategory, getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_ENERGIE]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_EAU]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_PROTEINES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_GLUCIDES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_LIPIDES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_SUCRES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_AMIDON]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_FIBRES_ALIMENTAIRES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_AG_SATURES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_AG_MONOINSATURES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_AG_POLYINSATURES]),
+									getDoubleValueFromField(fileLine[IndexAlimentFile.IDX_SEL_CHLORURE_DE_SODIUM]),
+									null, null, sysAdmin, true);
+
+							// Check if this ingredient already exists
+							List<Ingredient> searchResult = this.ingredientRepository
+									.findByNameAndActiveIsTrueAndOwnerEmail(food.getName(), SYS_ADMIN_EMAIL);
+
+							if (searchResult != null && searchResult.size() > 0) {
+								// Only on ingredient is expected. If many results returned, first on will be
+								// use.
+								Ingredient foodToUpdate = searchResult.get(0);
+
+								if (!foodToUpdate.equals(food)) {
+									// Update of this ingredient is necessary
+									foodToUpdate.updateWithIngredientAttributes(food);
+									ingredientList.add(foodToUpdate);
+									ingredientsToUpdate++;
+								}
+							} else {
+								// new ingredient to create
+								ingredientList.add(food);
+								ingredientsToAdd++;
+							}
+						}
+					}
+				}
+				this.ingredientRepository.saveAll(ingredientList);
+				System.out.println("Database refreshed:");
+				System.out.println("   - Categories added : " + categoriesAdded);
+				System.out.println("   - Ingredients added : " + ingredientsToAdd);
+				System.out.println("   - Ingredients updated : " + ingredientsToUpdate);
 			}
 
-			foodRepo.saveAll(newFoodItemList);
-*/
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("No file available for database refreshing...");
 			// We do nothing John Snow, as this is for Dev DB fill up
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,60 +220,53 @@ public class DataBaseInitialization  {
 		}
 	}
 
-		
 	private void loadGlycemicFile(String fileLocation) {
+		System.out.println("Glycemic index updating");
 
 		CSVParser csvParser = new CSVParserBuilder().withSeparator(CSV_SEPARATOR).build();
 
 		try (CSVReader reader = new CSVReaderBuilder(new FileReader(fileLocation)).withCSVParser(csvParser).build()) {
 
 			List<String[]> fileLineList = reader.readAll();
-		//	List<Food> foodToUpdateList = new ArrayList<>();
-/*
+			List<Ingredient> foodToUpdateList = new ArrayList<>();
+
+			int readGlycemicIndex = 0;
+			int ingredientUpdated = 0;
+			
 			for (String[] fileLine : fileLineList) {
-				List<Food> possibleFoodsToUpdate = foodRepo.findByNameContaining(fileLine[0]);
-				BigDecimal glycemicIndex = (StringUtils.isNotEmpty(fileLine[1])) ? new BigDecimal(fileLine[1]) : null;
-				for (Food foodToUpdate : possibleFoodsToUpdate) {
-					foodToUpdate.setGlycemic_index(glycemicIndex);
+				readGlycemicIndex++;
+				List<Ingredient> possibleFoodsToUpdate = this.ingredientRepository.findByNameContainingAndActiveIsTrueAndOwnerEmail(fileLine[0],  SYS_ADMIN_EMAIL);
+
+				Double glycemicIndex = getDoubleValueFromField(fileLine[1]);
+				for (Ingredient foodToUpdate : possibleFoodsToUpdate) {
+					foodToUpdate.setGlycemicIndex(glycemicIndex);
 					foodToUpdateList.add(foodToUpdate);
+					ingredientUpdated++;
 				}
 			}
 
-			foodRepo.saveAll(foodToUpdateList);
-*/
+			this.ingredientRepository.saveAll(foodToUpdateList);
+			
+			System.out.print("Glycemic index updated");
+			System.out.println("   - Data read : " + readGlycemicIndex);
+			System.out.println("   - Ingredients added : " + ingredientUpdated);
+			
+
 		} catch (FileNotFoundException e) {
 			// We do nothing John Snow, as this is for Dev DB fill up
-			e.printStackTrace();
+			System.out.println("No file available for Glycemic Index refresh");
 		} catch (IOException e) {
 			// We do nothing John Snow, as this is for Dev DB fill up
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Loads Daily Recommended Intakes based on ANSES recommendations.
-	 */
-	/*
-	private final void loadDRITemplatesTable() {
-		DRITemplate menTemplate = new DRITemplate("Homme", new BigDecimal(80), new BigDecimal(2600), new BigDecimal(0.15),
-				new BigDecimal(0.45), new BigDecimal(0.4), new BigDecimal(100), new BigDecimal(30), new BigDecimal(950),
-				new BigDecimal(1.3), new BigDecimal(11), new BigDecimal(150), new BigDecimal(420), new BigDecimal(2.8),
-				new BigDecimal(700), new BigDecimal(70), new BigDecimal(12), new BigDecimal(750), new BigDecimal(1.5),
-				new BigDecimal(1.8), new BigDecimal(17.4), new BigDecimal(5.8), new BigDecimal(1.8), new BigDecimal(330),
-				new BigDecimal(4), new BigDecimal(110), new BigDecimal(15), new BigDecimal(10.5), new BigDecimal(0),
-				new BigDecimal(0));
-
-		DRITemplate womenTemplate = new DRITemplate("Femme", new BigDecimal(80), new BigDecimal(2100), new BigDecimal(0.15),
-				new BigDecimal(0.45), new BigDecimal(0.4), new BigDecimal(100), new BigDecimal(30), new BigDecimal(950),
-				new BigDecimal(1), new BigDecimal(13), new BigDecimal(150), new BigDecimal(360), new BigDecimal(2.5),
-				new BigDecimal(700), new BigDecimal(70), new BigDecimal(9), new BigDecimal(650), new BigDecimal(1.2),
-				new BigDecimal(1.5), new BigDecimal(14), new BigDecimal(4.7), new BigDecimal(1.5), new BigDecimal(330),
-				new BigDecimal(4), new BigDecimal(110), new BigDecimal(15), new BigDecimal(9.9), new BigDecimal(0),
-				new BigDecimal(0));
-
-		driRepo.save(menTemplate);
-		driRepo.save(womenTemplate);
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("Refreshing database");
+		loadFoodTable("src/main/resources/data/csv/aliments.csv");
+		loadGlycemicFile("src/main/resources/data/csv/glycemique.csv");
 	}
-	*/
-}
 
+}

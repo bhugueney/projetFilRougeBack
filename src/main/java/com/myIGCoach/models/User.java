@@ -30,7 +30,7 @@ public class User {
 	@Column(name = "lastName")
 	private String lastName;
 	// email of user
-	@Column(name = "email")
+	@Column(name = "email", unique=true)
 	private String email;
 	// password of user
 	@Column(name = "pwd")

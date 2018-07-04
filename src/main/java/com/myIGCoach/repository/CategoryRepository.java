@@ -14,5 +14,8 @@ import com.myIGCoach.models.Category;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 	// to find one or many categories by name
 	public List<Category> findByName(String name);
+	
+	// Method to find a named category with given parent category
+	public List<Category> findByNameAndParent(String name, Category parent);
 
 }

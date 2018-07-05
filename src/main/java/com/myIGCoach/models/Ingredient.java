@@ -23,6 +23,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 // this is the type of link between DB to reflect the heritage, here the choice
@@ -48,8 +49,9 @@ public class Ingredient implements Serializable {
 	// category of ingredient
 	// this is a relation with object category, in DB this link is saved in column
 	// fk_category
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonBackReference(value = "categoryIngredient")
+	@ManyToOne(fetch = FetchType.EAGER)
+	//@JsonBackReference(value = "categoryIngredient")
+	@JsonManagedReference(value = "categoryIngredient")
 	@JoinColumn(name = "fk_category", foreignKey = @ForeignKey(name = "fk_category"), nullable = false)
 	private Category category;
 
@@ -88,7 +90,7 @@ public class Ingredient implements Serializable {
 	private String comment;
 
 	// owner of ingredient since object user
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user"), nullable = false)
 	@JsonBackReference(value = "ownerIngredient")
 	private User owner;

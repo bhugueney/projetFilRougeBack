@@ -51,7 +51,7 @@ public class Category {
 	// this is the relation Object between category and ingredient
 	// the result is the list of ingredients contained in this category
 	@OneToMany(mappedBy = "category")
-	@JsonManagedReference(value = "categoryIngredient")
+	@JsonBackReference(value = "categoryIngredient")
 	private List<Ingredient> listOfIngredient = new ArrayList<>();
 
 	/************************

@@ -15,6 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -51,7 +52,7 @@ public class Category {
 	// this is the relation Object between category and ingredient
 	// the result is the list of ingredients contained in this category
 	@OneToMany(mappedBy = "category")
-	@JsonBackReference(value = "categoryIngredient")
+	@JsonIgnore
 	private List<Ingredient> listOfIngredient = new ArrayList<>();
 
 	/************************

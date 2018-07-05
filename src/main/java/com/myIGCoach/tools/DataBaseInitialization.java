@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.stereotype.Component;
 
 import com.myIGCoach.models.Category;

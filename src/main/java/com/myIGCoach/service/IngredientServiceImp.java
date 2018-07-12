@@ -18,13 +18,6 @@ import com.myIGCoach.repository.RecipeRepository;
 import com.myIGCoach.repository.UserRepository;
 import com.myIGCoach.tools.CheckList;
 
-/*********************************************************************
- *********************************************************************
- * TODO the exception extract when user is an admin in findAll method TODO the
- * exception extract when user is an admin in read method
- *********************************************************************
- ********************************************************************/
-
 @Named
 public class IngredientServiceImp implements IngredientService {
 	@Inject
@@ -88,7 +81,7 @@ public class IngredientServiceImp implements IngredientService {
 	}
 
 	/**
-	 * 
+	 * method to list ingredient since a category
 	 */
 	public ResponseEntity<List<Ingredient>> readListByCategory(Long catId, Long userId) {
 		Optional<List<Ingredient>> list = null;
@@ -97,15 +90,10 @@ public class IngredientServiceImp implements IngredientService {
 		} else {
 			list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, userId);
 		}
-		//if (!i.isPresent()) {
-			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
-			for (User user : admin) {
-				list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, user.getId());
-				/*if (i.isPresent()) {
-					return ResponseEntity.ok().body(i.get());
-				}*/
-			}
-		//}
+		List<User> admin = userRepository.findByRole("ROLE_ADMIN");
+		for (User user : admin) {
+			list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, user.getId());
+		}
 		return list.isPresent() ? ResponseEntity.ok().body(list.get()) : ResponseEntity.notFound().build();
 	}
 
@@ -167,7 +155,7 @@ public class IngredientServiceImp implements IngredientService {
 				// Incoming ingredient doesn't contain owner (for security reason)
 				// copy of original owner in incoming ingredient before saving it.
 				resource.setOwner(i.get().getOwner());
-				
+
 				Ingredient updatedIngredient = ingredientRepository.save(resource);
 				return new ResponseEntity<Ingredient>(updatedIngredient, HttpStatus.OK);
 			} catch (Exception e) {

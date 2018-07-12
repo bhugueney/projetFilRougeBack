@@ -19,8 +19,8 @@ import com.myIGCoach.tools.CheckList;
 
 /*********************************************************************
  *********************************************************************
- * TODO the exception extract when user is an admin in findAll method
- * TODO the exception extract when user is an admin in read method
+ * TODO the exception extract when user is an admin in findAll method TODO the
+ * exception extract when user is an admin in read method
  *********************************************************************
  ********************************************************************/
 
@@ -65,17 +65,18 @@ public class IngredientServiceImp implements IngredientService {
 	 * 
 	 * @param id:
 	 *            user id do the request return list of ingredients or null or
-	 *            internet server error
-	 *            If null, only originals ingredient will be returned
+	 *            internet server error If null, only originals ingredient will be
+	 *            returned
 	 */
 	@Override
 	public List<Ingredient> findAll(Long id) {
 		List<Ingredient> list = new ArrayList<>();
 		if (checkList.checkUserAdmin(id)) {
-			// If user is an administrator, all ingredients are returned. 
+			// If user is an administrator, all ingredients are returned.
 			list = ingredientRepository.findAll();
 		} else {
-			// If user is not an administrator, user's ingredients and basic ingredients (created by adminitrator) are returned.
+			// If user is not an administrator, user's ingredients and basic ingredients
+			// (created by adminitrator) are returned.
 			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
 			for (User user : admin) {
 				list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(user.getId()));
@@ -83,6 +84,28 @@ public class IngredientServiceImp implements IngredientService {
 			list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(id));
 		}
 		return list;
+	}
+
+	/**
+	 * 
+	 */
+	public ResponseEntity<List<Ingredient>> readListByCategory(Long catId, Long userId) {
+		Optional<List<Ingredient>> list = null;
+		if (checkList.checkUserAdmin(userId)) {
+			list = ingredientRepository.findByCategoryIdAndActiveIsTrue(catId);
+		} else {
+			list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, userId);
+		}
+		//if (!i.isPresent()) {
+			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
+			for (User user : admin) {
+				list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, user.getId());
+				/*if (i.isPresent()) {
+					return ResponseEntity.ok().body(i.get());
+				}*/
+			}
+		//}
+		return list.isPresent() ? ResponseEntity.ok().body(list.get()) : ResponseEntity.notFound().build();
 	}
 
 	/**

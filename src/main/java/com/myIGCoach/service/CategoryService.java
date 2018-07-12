@@ -9,12 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.myIGCoach.models.Category;
 
-/***************************************************
- ***************************************************
- * // TODO service to list only category of level 1
- ***************************************************
- ***************************************************/
-
 @Service
 @Named
 public interface CategoryService {
@@ -24,10 +18,11 @@ public interface CategoryService {
 	// method to find all categories
 	public List<Category> findAll();
 
-	// TODO service to list only category of level 1
-
 	// method to find the informations about a specifically category
 	public ResponseEntity<Category> read(Long id);
+	
+	// method to list children of one category
+	public ResponseEntity<List<Category>> readChildren(Long parentId);
 
 	// method to update a category (only ROLE_ADMIN)
 	public String update(Category c, Long id, Long userId);

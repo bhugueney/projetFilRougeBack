@@ -73,6 +73,21 @@ public class IngredientController {
 	public ResponseEntity<Ingredient> read(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
 		return ingredientService.read(id, userId);
 	}
+	
+	/**
+	 * Request GET with a variable category id to list ingredients since it
+	 * 
+	 * @param id
+	 *            : variable to designate the id of category of ingredients
+	 * @param userId
+	 *            : contains the id of user who do the request
+	 * @return the list of ingredients since the category
+	 */
+	@RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<List<Ingredient>> readListByCategory(@PathVariable("id") Long catId, @RequestParam("userId") Long userId) {
+		return ingredientService.readListByCategory(catId, userId);
+	}
 
 	/**
 	 * Request PUT with a variable id of ingredient and take a parameter userId.

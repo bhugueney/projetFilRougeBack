@@ -19,7 +19,6 @@ import com.myIGCoach.service.CategoryService;
 /**********************************************************************
  **********************************************************************
  * TODO SPRING SECURITY ON PATH AND ON METHODS
- * TODO service to list only category of level 1
  **********************************************************************
  **********************************************************************/
 
@@ -68,6 +67,19 @@ public class CategoryController {
 	@ResponseBody
 	public ResponseEntity<Category> read(@PathVariable("id") Long id) {
 		return categoryService.read(id);
+	}
+
+	/**
+	 * method to list children of one category
+	 * 
+	 * @param id:
+	 *            parent category id
+	 * @return informations about this children
+	 */
+	@RequestMapping(method = RequestMethod.GET, value = "children/{parentId}")
+	@ResponseBody
+	public ResponseEntity<List<Category>> readChildren(@PathVariable("parentId") Long parentId) {
+		return categoryService.readChildren(parentId);
 	}
 
 	/**

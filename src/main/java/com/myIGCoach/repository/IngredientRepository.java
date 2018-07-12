@@ -46,4 +46,11 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 	public void deleteIngredientWithoutGlycemicIndex();
 
 	
+	// method to find list of active ingredients since a category
+	public Optional<List<Ingredient>> findByCategoryIdAndActiveIsTrue(Long catId);
+
+	
+	// method to find list of active ingredients since a category and Owner
+	public Optional<List<Ingredient>> findByCategoryIdAndOwnerIdAndActiveIsTrue(Long catId, Long id);
+
 }

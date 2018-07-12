@@ -13,12 +13,6 @@ import com.myIGCoach.models.Category;
 import com.myIGCoach.repository.CategoryRepository;
 import com.myIGCoach.tools.CheckList;
 
-/*********************************************************************
- *********************************************************************
- * TODO service to list only category of level 1
- *********************************************************************
- ********************************************************************/
-
 @Service
 @Named
 public class CategoryServiceImp implements CategoryService {
@@ -58,8 +52,6 @@ public class CategoryServiceImp implements CategoryService {
 	public List<Category> findAll() {
 		return categoryRepository.findAll();
 	}
-	
-	// TODO service to list only category of level 1
 
 	/**
 	 * method to read the informations about a category
@@ -71,6 +63,18 @@ public class CategoryServiceImp implements CategoryService {
 	public ResponseEntity<Category> read(Long id) {
 		Optional<Category> c = categoryRepository.findById(id);
 		return c.isPresent() ? ResponseEntity.ok().body(c.get()) : ResponseEntity.notFound().build();
+	}
+
+	/**
+	 * method to list children of category
+	 * 
+	 * @param id:
+	 *            parent category id
+	 */
+	@Override
+	public ResponseEntity<List<Category>> readChildren(Long parentId) {
+		Optional<List<Category>> list = categoryRepository.findByParentId(parentId);
+		return list.isPresent() ? ResponseEntity.ok().body(list.get()) : ResponseEntity.notFound().build();
 	}
 
 	/**

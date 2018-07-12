@@ -11,7 +11,6 @@ import com.myIGCoach.models.Ingredient;
 /***************************************************
  ***************************************************
  * TODO method to list only users's ingredients
- * TODO method to list ingredients since a cat
  ***************************************************
  ***************************************************/
 
@@ -25,7 +24,8 @@ public interface IngredientService {
 	
 	// TODO method to list only users's ingredients
 
-	// TODO method to list ingredients since a category
+	// method to list ingredients since a category
+	public ResponseEntity<List<Ingredient>> readListByCategory(Long catId, Long userId);
 
 	// method to display details of an ingredient
 	public ResponseEntity<Ingredient> read(Long id, Long userId);

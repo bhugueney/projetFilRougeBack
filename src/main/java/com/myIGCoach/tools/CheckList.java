@@ -145,14 +145,10 @@ public class CheckList {
 			// TODO REGEX CONTROLLER ON STRING NAME
 			if (i.getCategory() != null && i.getCategory().getId() != null
 					&& checkCategoryExists(categoryRepository.findById(i.getCategory().getId()).get())) {
-				if (i.getOwner() != null && i.getOwner().getId() != null
-						&& checkUserExists(userRepository.findById(i.getOwner().getId()).get())
-						&& i.getOwner().getId() == id) {
 					// TODO SECURITY CONTROL ON COMMENT
 					// TODO SECURITY CONTROL ON IMAGE
 					// TODO SECURITY CONTROL ON DATAS (not necessary with the type double)
 					result = true;
-				}
 			}
 		}
 		return result;

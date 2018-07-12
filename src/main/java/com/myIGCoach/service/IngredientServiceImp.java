@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.myIGCoach.models.Ingredient;
@@ -19,8 +20,8 @@ import com.myIGCoach.tools.CheckList;
 
 /*********************************************************************
  *********************************************************************
- * TODO the exception extract when user is an admin in findAll method
- * TODO the exception extract when user is an admin in read method
+ * TODO the exception extract when user is an admin in findAll method TODO the
+ * exception extract when user is an admin in read method
  *********************************************************************
  ********************************************************************/
 
@@ -65,17 +66,18 @@ public class IngredientServiceImp implements IngredientService {
 	 * 
 	 * @param id:
 	 *            user id do the request return list of ingredients or null or
-	 *            internet server error
-	 *            If null, only originals ingredient will be returned
+	 *            internet server error If null, only originals ingredient will be
+	 *            returned
 	 */
 	@Override
 	public List<Ingredient> findAll(Long id) {
 		List<Ingredient> list = new ArrayList<>();
 		if (checkList.checkUserAdmin(id)) {
-			// If user is an administrator, all ingredients are returned. 
+			// If user is an administrator, all ingredients are returned.
 			list = ingredientRepository.findAll();
 		} else {
-			// If user is not an administrator, user's ingredients and basic ingredients (created by adminitrator) are returned.
+			// If user is not an administrator, user's ingredients and basic ingredients
+			// (created by adminitrator) are returned.
 			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
 			for (User user : admin) {
 				list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(user.getId()));
@@ -126,21 +128,27 @@ public class IngredientServiceImp implements IngredientService {
 	 *            internet server error
 	 */
 	@Override
-	public Ingredient update(Long id, Ingredient resource, Long userId) {
-		if (resource.getOwner() == null) {
-			return null;
-		}
+	public ResponseEntity<Ingredient> update(Long id, Ingredient resource, Long userId) {
+
 		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
-		if (i.isPresent() && i.get().getId() == resource.getId()
-				&& i.get().getOwner().getId() == resource.getOwner().getId()) {
-			boolean check = checkList.checkIngredientInformations(resource, userId);
-			if (check) {
-				return ingredientRepository.save(resource);
-			} else {
-				return null;
+
+		if (!i.isPresent()) {
+			return new ResponseEntity<Ingredient>(HttpStatus.NOT_FOUND);
+		}
+
+		if (i.get().getId() == resource.getId()) {
+			return new ResponseEntity<Ingredient>(HttpStatus.BAD_REQUEST);
+		}
+
+		if (checkList.checkIngredientInformations(resource, userId)) {
+			try {
+				Ingredient updatedIngredient = ingredientRepository.save(resource);
+				return new ResponseEntity<Ingredient>(updatedIngredient, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<Ingredient>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
-			return null;
+			return new ResponseEntity<Ingredient>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 

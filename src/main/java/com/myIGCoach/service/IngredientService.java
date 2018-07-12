@@ -31,7 +31,7 @@ public interface IngredientService {
 	public ResponseEntity<Ingredient> read(Long id, Long userId);
 
 	// method to modify an ingredient if user is the owner of it
-	public Ingredient update(Long id, Ingredient resource, Long userId);
+	public ResponseEntity<Ingredient> update(Long id, Ingredient resource, Long userId);
 
 	// method to delete an ingredient if user is the owner of it
 	public String delete(Long id, Long userId);

@@ -6,10 +6,13 @@ import java.util.Optional;
 import javax.inject.Named;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.myIGCoach.models.Ingredient;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 @Repository
 @Named
@@ -30,12 +33,17 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
 	// method to find one or many ingredients by name
 	public List<Ingredient> findByName(String name);
-	
+
 	public List<Ingredient> findByNameContainingAndActiveIsTrueAndOwnerEmail(String name, String ownerEMail);
-	
+
 	// method to find an ingredient by name and owner email
 	public List<Ingredient> findByNameAndActiveIsTrueAndOwnerEmail(String name, String ownerEMail);
-	
-	
 
+	// method to delete ingredient without Glycemic Index
+	@Modifying
+	@Transactional
+	@Query("delete from Ingredient i where i.glycemicIndex is null")
+	public void deleteIngredientWithoutGlycemicIndex();
+
+	
 }

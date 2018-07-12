@@ -142,6 +142,10 @@ public class IngredientServiceImp implements IngredientService {
 
 		if (checkList.checkIngredientInformations(resource, userId)) {
 			try {
+				// Incoming ingredient doesn't contain owner (for security reason)
+				// copy of original owner in incoming ingredient before saving it.
+				resource.setOwner(i.get().getOwner());
+				
 				Ingredient updatedIngredient = ingredientRepository.save(resource);
 				return new ResponseEntity<Ingredient>(updatedIngredient, HttpStatus.OK);
 			} catch (Exception e) {

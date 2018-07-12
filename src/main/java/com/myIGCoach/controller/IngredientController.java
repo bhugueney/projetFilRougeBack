@@ -104,7 +104,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
-	public Ingredient update(@PathVariable("id") Long id, @RequestBody Ingredient resource,
+	public ResponseEntity<Ingredient> update(@PathVariable("id") Long id, @RequestBody Ingredient resource,
 			@RequestParam("userId") Long userId) {
 		return ingredientService.update(id, resource, userId);
 	}

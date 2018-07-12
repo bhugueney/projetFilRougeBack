@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.myIGCoach.models.Ingredient;
@@ -149,21 +150,31 @@ public class IngredientServiceImp implements IngredientService {
 	 *            internet server error
 	 */
 	@Override
-	public Ingredient update(Long id, Ingredient resource, Long userId) {
-		if (resource.getOwner() == null) {
-			return null;
-		}
+	public ResponseEntity<Ingredient> update(Long id, Ingredient resource, Long userId) {
+
 		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
-		if (i.isPresent() && i.get().getId() == resource.getId()
-				&& i.get().getOwner().getId() == resource.getOwner().getId()) {
-			boolean check = checkList.checkIngredientInformations(resource, userId);
-			if (check) {
-				return ingredientRepository.save(resource);
-			} else {
-				return null;
+
+		if (!i.isPresent()) {
+			return new ResponseEntity<Ingredient>(HttpStatus.NOT_FOUND);
+		}
+
+		if (i.get().getId() == resource.getId()) {
+			return new ResponseEntity<Ingredient>(HttpStatus.BAD_REQUEST);
+		}
+
+		if (checkList.checkIngredientInformations(resource, userId)) {
+			try {
+				// Incoming ingredient doesn't contain owner (for security reason)
+				// copy of original owner in incoming ingredient before saving it.
+				resource.setOwner(i.get().getOwner());
+				
+				Ingredient updatedIngredient = ingredientRepository.save(resource);
+				return new ResponseEntity<Ingredient>(updatedIngredient, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<Ingredient>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
-			return null;
+			return new ResponseEntity<Ingredient>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 

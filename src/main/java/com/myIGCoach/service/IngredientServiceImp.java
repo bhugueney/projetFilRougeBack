@@ -155,7 +155,6 @@ public class IngredientServiceImp implements IngredientService {
 	@Override
 	public ResponseEntity<Ingredient> update(Long id, Ingredient resource, Long userId) {
 
-		System.out.println("Update");
 		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
 
 		if (!i.isPresent()) {

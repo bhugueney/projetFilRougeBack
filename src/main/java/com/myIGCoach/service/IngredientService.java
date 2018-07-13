@@ -17,7 +17,7 @@ import com.myIGCoach.models.Ingredient;
 @Named
 public interface IngredientService {
 	// method to save an ingredient
-	public Ingredient create(Ingredient i, Long userId);
+	public ResponseEntity<Ingredient> create(Ingredient i, Long userId);
 
 	// to list basics ingredients and ingredients of user
 	public List<Ingredient> findAll(Long id);

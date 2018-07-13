@@ -57,6 +57,7 @@ public class UserController {
 		return userService.read(userId);
 	}
 
+	
 	/**
 	 * method to update the details of user (firstName, LastName)
 	 * 
@@ -85,4 +86,30 @@ public class UserController {
 		return userService.delete(u, userId);
 	}
 
+	
+	
+	
+	
+	
+	/**
+	 * method to authenticate an user by email and hashpassword
+	 * 
+	 * @param email:
+	 *            user email
+	 *            
+	 * @param password:
+	 *            user password base64 encoded
+	 *            
+	 * @return details about user or null or internet server error
+	 */
+	@RequestMapping(value = "/authenticate", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<User> authenticate(@RequestParam("authToken") String authToken) {
+		System.out.println("user authenticate " + authToken );
+		return userService.authenticate(authToken);
+	}
+	
+	
+	
+	
 }

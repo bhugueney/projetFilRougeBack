@@ -57,21 +57,8 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- opencsv is used to load csv file in database -->
-		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>4.0</version>
-		</dependency>
 
-		<!-- this dependency is used in UserServiceImpl for decoding json string -->
-		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
-
+	
 	</dependencies>
 
 	<build>

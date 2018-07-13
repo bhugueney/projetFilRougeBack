@@ -21,5 +21,11 @@ public interface UserService {
 
 	// to remove the user
 	public String delete(Long u, Long userId);
-
+	
+	// to get a user by his email
+	public ResponseEntity<User> findByEmail(String email);
+	
+	// to authenticate a user by his email and password
+	public ResponseEntity<User> authenticate(String base64EncodedjsonToken);
+		
 }

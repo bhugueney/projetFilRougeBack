@@ -104,10 +104,10 @@ public class IngredientServiceImp implements IngredientService {
 			list = ingredientRepository.findByCategoryIdAndActiveIsTrue(catId);
 		} else {
 			list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, userId);
-		}
-		List<User> admin = userRepository.findByRole("ROLE_ADMIN");
-		for (User user : admin) {
-			list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, user.getId());
+			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
+			for (User user : admin) {
+				list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, user.getId());
+			}
 		}
 		return list.isPresent() ? ResponseEntity.ok().body(list.get()) : ResponseEntity.notFound().build();
 	}

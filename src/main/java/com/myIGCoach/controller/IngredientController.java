@@ -20,7 +20,6 @@ import com.myIGCoach.service.IngredientService;
  ***************************************************
  * TODO SPRING SECURITY ON PATH AND ON METHODS
  * TODO service to list only standard ingredients (admin)
- * TODO service to list ingredients since a category
  ***************************************************
  ***************************************************/
 

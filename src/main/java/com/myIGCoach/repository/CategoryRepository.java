@@ -1,6 +1,7 @@
 package com.myIGCoach.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Named;
 
@@ -17,5 +18,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	
 	// Method to find a named category with given parent category
 	public List<Category> findByNameAndParent(String name, Category parent);
+	
+	// method to find children of category
+	public Optional<List<Category>> findByParentId(Long parentId);
 
 }

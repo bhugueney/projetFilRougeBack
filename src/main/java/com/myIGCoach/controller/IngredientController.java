@@ -20,7 +20,6 @@ import com.myIGCoach.service.IngredientService;
  ***************************************************
  * TODO SPRING SECURITY ON PATH AND ON METHODS
  * TODO service to list only standard ingredients (admin)
- * TODO service to list ingredients since a category
  ***************************************************
  ***************************************************/
 
@@ -42,7 +41,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public Ingredient create(@RequestBody Ingredient i, @RequestParam("userId") Long userId) {
+	public ResponseEntity<Ingredient> create(@RequestBody Ingredient i, @RequestParam("userId") Long userId) {
 		return ingredientService.create(i, userId);
 	}
 
@@ -55,7 +54,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public List<Ingredient> findAll(@RequestParam("userId") Long id) {
+	public List<Ingredient> findAll(@RequestParam( value="userId", defaultValue = "0") Long id) {
 		return ingredientService.findAll(id);
 	}
 
@@ -70,8 +69,24 @@ public class IngredientController {
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Ingredient> read(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
+	public ResponseEntity<Ingredient> read(@PathVariable("id") Long id, @RequestParam( value="userId", defaultValue = "0") Long userId) {
+		
 		return ingredientService.read(id, userId);
+	}
+	
+	/**
+	 * Request GET with a variable category id to list ingredients since it
+	 * 
+	 * @param id
+	 *            : variable to designate the id of category of ingredients
+	 * @param userId
+	 *            : contains the id of user who do the request
+	 * @return the list of ingredients since the category
+	 */
+	@RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<List<Ingredient>> readListByCategory(@PathVariable("id") Long catId, @RequestParam("userId") Long userId) {
+		return ingredientService.readListByCategory(catId, userId);
 	}
 
 	/**
@@ -89,7 +104,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
-	public Ingredient update(@PathVariable("id") Long id, @RequestBody Ingredient resource,
+	public ResponseEntity<Ingredient> update(@PathVariable("id") Long id, @RequestBody Ingredient resource,
 			@RequestParam("userId") Long userId) {
 		return ingredientService.update(id, resource, userId);
 	}

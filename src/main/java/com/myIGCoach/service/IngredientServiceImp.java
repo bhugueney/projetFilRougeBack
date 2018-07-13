@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.myIGCoach.models.Ingredient;
@@ -16,13 +17,6 @@ import com.myIGCoach.repository.MealRepository;
 import com.myIGCoach.repository.RecipeRepository;
 import com.myIGCoach.repository.UserRepository;
 import com.myIGCoach.tools.CheckList;
-
-/*********************************************************************
- *********************************************************************
- * TODO the exception extract when user is an admin in findAll method
- * TODO the exception extract when user is an admin in read method
- *********************************************************************
- ********************************************************************/
 
 @Named
 public class IngredientServiceImp implements IngredientService {
@@ -51,12 +45,27 @@ public class IngredientServiceImp implements IngredientService {
 	 *            internet server error
 	 */
 	@Override
-	public Ingredient create(Ingredient i, Long userId) {
+	public ResponseEntity<Ingredient> create(Ingredient i, Long userId) {
+		
 		boolean check = checkList.checkNewIngredient(i, userId);
-		if (check) {
-			return ingredientRepository.save(i);
+		if (check) {			
+			// Getting user information to inject owner information in ingredient instance
+			Optional<User> owner = this.userRepository.findById(userId);
+			if ( ! owner.isPresent() ) {
+				return new ResponseEntity<Ingredient>(HttpStatus.PRECONDITION_FAILED);
+			}
+			
+			i.setOwner(owner.get());
+			
+			try {
+				final Ingredient createdIngredient = ingredientRepository.save(i);
+				return new ResponseEntity<Ingredient>(createdIngredient, HttpStatus.OK);
+			} catch( Exception e) {
+				e.printStackTrace(System.err);
+				return new ResponseEntity<Ingredient>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
-			return null;
+			return new ResponseEntity<Ingredient>(HttpStatus.PRECONDITION_FAILED);
 		}
 	}
 
@@ -65,17 +74,18 @@ public class IngredientServiceImp implements IngredientService {
 	 * 
 	 * @param id:
 	 *            user id do the request return list of ingredients or null or
-	 *            internet server error
-	 *            If null, only originals ingredient will be returned
+	 *            internet server error If null, only originals ingredient will be
+	 *            returned
 	 */
 	@Override
 	public List<Ingredient> findAll(Long id) {
 		List<Ingredient> list = new ArrayList<>();
 		if (checkList.checkUserAdmin(id)) {
-			// If user is an administrator, all ingredients are returned. 
+			// If user is an administrator, all ingredients are returned.
 			list = ingredientRepository.findAll();
 		} else {
-			// If user is not an administrator, user's ingredients and basic ingredients (created by adminitrator) are returned.
+			// If user is not an administrator, user's ingredients and basic ingredients
+			// (created by adminitrator) are returned.
 			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
 			for (User user : admin) {
 				list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(user.getId()));
@@ -83,6 +93,23 @@ public class IngredientServiceImp implements IngredientService {
 			list.addAll(ingredientRepository.findByOwnerIdAndActiveIsTrue(id));
 		}
 		return list;
+	}
+
+	/**
+	 * method to list ingredient since a category
+	 */
+	public ResponseEntity<List<Ingredient>> readListByCategory(Long catId, Long userId) {
+		Optional<List<Ingredient>> list = null;
+		if (checkList.checkUserAdmin(userId)) {
+			list = ingredientRepository.findByCategoryIdAndActiveIsTrue(catId);
+		} else {
+			list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, userId);
+			List<User> admin = userRepository.findByRole("ROLE_ADMIN");
+			for (User user : admin) {
+				list = ingredientRepository.findByCategoryIdAndOwnerIdAndActiveIsTrue(catId, user.getId());
+			}
+		}
+		return list.isPresent() ? ResponseEntity.ok().body(list.get()) : ResponseEntity.notFound().build();
 	}
 
 	/**
@@ -126,21 +153,31 @@ public class IngredientServiceImp implements IngredientService {
 	 *            internet server error
 	 */
 	@Override
-	public Ingredient update(Long id, Ingredient resource, Long userId) {
-		if (resource.getOwner() == null) {
-			return null;
-		}
+	public ResponseEntity<Ingredient> update(Long id, Ingredient resource, Long userId) {
+
 		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
-		if (i.isPresent() && i.get().getId() == resource.getId()
-				&& i.get().getOwner().getId() == resource.getOwner().getId()) {
-			boolean check = checkList.checkIngredientInformations(resource, userId);
-			if (check) {
-				return ingredientRepository.save(resource);
-			} else {
-				return null;
+
+		if (!i.isPresent()) {
+			return new ResponseEntity<Ingredient>(HttpStatus.NOT_FOUND);
+		}
+		
+		if (! i.get().getId().equals(resource.getId())) {
+			return new ResponseEntity<Ingredient>(HttpStatus.BAD_REQUEST);
+		}
+
+		if (checkList.checkIngredientInformations(resource, userId)) {
+			try {
+				// Incoming ingredient doesn't contain owner (for security reason)
+				// copy of original owner in incoming ingredient before saving it.
+				resource.setOwner(i.get().getOwner());
+
+				Ingredient updatedIngredient = ingredientRepository.save(resource);
+				return new ResponseEntity<Ingredient>(updatedIngredient, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<Ingredient>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
-			return null;
+			return new ResponseEntity<Ingredient>(HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 

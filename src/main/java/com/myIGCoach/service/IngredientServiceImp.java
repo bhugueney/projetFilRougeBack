@@ -45,12 +45,27 @@ public class IngredientServiceImp implements IngredientService {
 	 *            internet server error
 	 */
 	@Override
-	public Ingredient create(Ingredient i, Long userId) {
+	public ResponseEntity<Ingredient> create(Ingredient i, Long userId) {
+		
 		boolean check = checkList.checkNewIngredient(i, userId);
-		if (check) {
-			return ingredientRepository.save(i);
+		if (check) {			
+			// Getting user information to inject owner information in ingredient instance
+			Optional<User> owner = this.userRepository.findById(userId);
+			if ( ! owner.isPresent() ) {
+				return new ResponseEntity<Ingredient>(HttpStatus.PRECONDITION_FAILED);
+			}
+			
+			i.setOwner(owner.get());
+			
+			try {
+				final Ingredient createdIngredient = ingredientRepository.save(i);
+				return new ResponseEntity<Ingredient>(createdIngredient, HttpStatus.OK);
+			} catch( Exception e) {
+				e.printStackTrace(System.err);
+				return new ResponseEntity<Ingredient>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
-			return null;
+			return new ResponseEntity<Ingredient>(HttpStatus.PRECONDITION_FAILED);
 		}
 	}
 
@@ -140,13 +155,14 @@ public class IngredientServiceImp implements IngredientService {
 	@Override
 	public ResponseEntity<Ingredient> update(Long id, Ingredient resource, Long userId) {
 
+		System.out.println("Update");
 		Optional<Ingredient> i = ingredientRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
 
 		if (!i.isPresent()) {
 			return new ResponseEntity<Ingredient>(HttpStatus.NOT_FOUND);
 		}
-
-		if (i.get().getId() == resource.getId()) {
+		
+		if (! i.get().getId().equals(resource.getId())) {
 			return new ResponseEntity<Ingredient>(HttpStatus.BAD_REQUEST);
 		}
 

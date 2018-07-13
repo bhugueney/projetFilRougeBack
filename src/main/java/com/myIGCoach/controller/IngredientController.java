@@ -41,7 +41,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public Ingredient create(@RequestBody Ingredient i, @RequestParam("userId") Long userId) {
+	public ResponseEntity<Ingredient> create(@RequestBody Ingredient i, @RequestParam("userId") Long userId) {
 		return ingredientService.create(i, userId);
 	}
 

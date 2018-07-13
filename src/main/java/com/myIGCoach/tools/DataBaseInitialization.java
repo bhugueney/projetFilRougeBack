@@ -246,6 +246,9 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
 
 			this.ingredientRepository.saveAll(foodToUpdateList);
 			
+			// Delete of ingredient without GlycemicIndex
+			this.ingredientRepository.deleteIngredientWithoutGlycemicIndex();
+			
 			System.out.print("Glycemic index updated");
 			System.out.println("   - Data read : " + readGlycemicIndex);
 			System.out.println("   - Ingredients added : " + ingredientUpdated);

@@ -55,7 +55,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public List<Ingredient> findAll(@RequestParam("userId") Long id) {
+	public List<Ingredient> findAll(@RequestParam( value="userId", defaultValue = "0") Long id) {
 		return ingredientService.findAll(id);
 	}
 
@@ -70,7 +70,8 @@ public class IngredientController {
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Ingredient> read(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
+	public ResponseEntity<Ingredient> read(@PathVariable("id") Long id, @RequestParam( value="userId", defaultValue = "0") Long userId) {
+		
 		return ingredientService.read(id, userId);
 	}
 	

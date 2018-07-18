@@ -25,6 +25,7 @@ import com.myIGCoach.service.IngredientService;
 
 @RestController
 @RequestMapping("/ingredients")
+// @CrossOrigin()
 public class IngredientController {
 	@Inject
 	private IngredientService ingredientService;

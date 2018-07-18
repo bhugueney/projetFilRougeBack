@@ -47,15 +47,16 @@ public class IngredientServiceImp implements IngredientService {
 	@Override
 	public ResponseEntity<Ingredient> create(Ingredient i, Long userId) {
 		
+		// Getting user information to inject owner information in ingredient instance
+		Optional<User> owner = this.userRepository.findById(userId);
+		if (!owner.isPresent()) {
+			return new ResponseEntity<Ingredient>(HttpStatus.PRECONDITION_FAILED);
+		}
+
+		i.setOwner(owner.get());
+				
 		boolean check = checkList.checkNewIngredient(i, userId);
 		if (check) {			
-			// Getting user information to inject owner information in ingredient instance
-			Optional<User> owner = this.userRepository.findById(userId);
-			if ( ! owner.isPresent() ) {
-				return new ResponseEntity<Ingredient>(HttpStatus.PRECONDITION_FAILED);
-			}
-			
-			i.setOwner(owner.get());
 			
 			try {
 				final Ingredient createdIngredient = ingredientRepository.save(i);

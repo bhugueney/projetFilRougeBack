@@ -86,7 +86,7 @@ public class IngredientController {
 	 */
 	@RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<List<Ingredient>> readListByCategory(@PathVariable("id") Long catId, @RequestParam("userId") Long userId) {
+	public ResponseEntity<List<Ingredient>> readListByCategory(@PathVariable("id") Long catId, @RequestParam(value="userId", defaultValue = "0") Long userId) {
 		return ingredientService.readListByCategory(catId, userId);
 	}
 

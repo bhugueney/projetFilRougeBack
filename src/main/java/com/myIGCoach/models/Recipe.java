@@ -24,8 +24,8 @@ public class Recipe extends Ingredient {
 	private static final long serialVersionUID = 1L;
 
 	// a recipe contend a list of ingredients with their quantity
-	@JsonManagedReference(value = "recipe")
-	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+	@JsonManagedReference(value = "recipe") // to send the ingredients of recipe since the QuantityRecipe entity
+	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL) // type of relation
 	private List<QuantityRecipe> listOfIngredients = new ArrayList<>();
 
 	/************************

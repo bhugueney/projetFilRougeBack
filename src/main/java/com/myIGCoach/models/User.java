@@ -39,8 +39,8 @@ public class User {
 	@Column(name = "role")
 	private String role = "ROLE_USER";
 	// this is the relation Object between user who is owner of ingredient
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-	@JsonManagedReference(value = "ownerIngredient")
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL) // type of relation
+	@JsonManagedReference(value = "ownerIngredient") // to send information in Json since relation with ingredient entity
 	private List<Ingredient> ingredients = new ArrayList<>();
 
 	/************************

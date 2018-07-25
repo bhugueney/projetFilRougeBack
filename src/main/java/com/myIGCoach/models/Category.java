@@ -35,25 +35,21 @@ public class Category {
 	 ***************************************************************************************************/
 	// this is the id of parent of this category and it's saved in DB with a column
 	// 'fk_parent'
-	@ManyToOne
+	@ManyToOne // type of relation with parent (category entity)
 	@JoinColumn(name = "fk_parent")
-	//@JsonBackReference(value = "parentId")
-	//@JsonManagedReference(value = "parentId")
 	private Category parent;
 
 	// this is the link of parent with child, this relation exist in Object but in
 	// DB it's the link with column 'fk_parent'.
 	// the result is the list of children of this category
-	@OneToMany(mappedBy = "parent")
-	//@JsonManagedReference(value = "parentId")
-	//@JsonBackReference(value = "parentId")
-	@JsonIgnore
+	@OneToMany(mappedBy = "parent") // the reverse of link between one parent category who can have more children
+	@JsonIgnore // to do not have a loop when we send information about a category with category child entity
 	private List<Category> listOfChildren = new ArrayList<>();
 
 	// this is the relation Object between category and ingredient
 	// the result is the list of ingredients contained in this category
 	@OneToMany(mappedBy = "category")
-	@JsonIgnore
+	@JsonIgnore // to do not have a loop when we send information about a category with ingredient entity
 	private List<Ingredient> listOfIngredient = new ArrayList<>();
 
 	/************************

@@ -15,12 +15,6 @@ import com.myIGCoach.repository.CategoryRepository;
 import com.myIGCoach.repository.IngredientRepository;
 import com.myIGCoach.repository.UserRepository;
 
-/***************************************************
- ***************************************************
- * TODO cutting and simplification of check methods
- ***************************************************
- **************************************************/
-
 /**
  * this class serve to make controls on data
  * 

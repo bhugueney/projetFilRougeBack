@@ -22,8 +22,8 @@ import com.myIGCoach.tools.authenticationToken;
 
 /***************************************************
  ***************************************************
- * TODO exception deleting of a user by an admin TODO some constraints when user
- * to delete is an admin
+ * TODO exception deleting of a user by an admin
+ * TODO some constraints when user to delete is an admin
  ***************************************************
  ***************************************************/
 
@@ -134,7 +134,7 @@ public class UserServiceImp implements UserService {
 	}
 
 	/**
-	 * method to to authenticate a user by his email and password
+	 * method to do authenticate a user by his email and password
 	 * 
 	 * @param email: user email
 	 * 

@@ -20,13 +20,6 @@ import com.myIGCoach.repository.RecipeRepository;
 import com.myIGCoach.repository.UserRepository;
 import com.myIGCoach.tools.CheckList;
 
-/*********************************************************************
- *********************************************************************
- * TODO the exception extract when user is an admin in findAll method
- * TODO the exception extract when user is an admin in read method
- *********************************************************************
- ********************************************************************/
-
 @Named
 @Service
 public class RecipeServiceImp implements RecipeService {

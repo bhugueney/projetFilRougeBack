@@ -16,13 +16,6 @@ import com.myIGCoach.models.QuantityRecipe;
 import com.myIGCoach.repository.MealRepository;
 import com.myIGCoach.tools.CheckList;
 
-/*********************************************************************
- *********************************************************************
- * TODO the exception extract when user is an admin in findAll method
- * TODO the exception extract when user is an admin in read method
- *********************************************************************
- ********************************************************************/
-
 @Service
 @Named
 public class MealServiceImp implements MealService {

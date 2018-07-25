@@ -34,6 +34,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 	// method to find one or many ingredients by name
 	public List<Ingredient> findByName(String name);
 
+	// method to find one or many ingredients by name and when there are active and with check owner
 	public List<Ingredient> findByNameContainingAndActiveIsTrueAndOwnerEmail(String name, String ownerEMail);
 
 	// method to find an ingredient by name and owner email

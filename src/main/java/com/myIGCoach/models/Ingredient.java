@@ -48,7 +48,7 @@ public class Ingredient implements Serializable {
 	// category of ingredient
 	// this is a relation with object category, in DB this link is saved in column
 	// fk_category
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER) // type of relation with category entity to have information about category
 	@JoinColumn(name = "fk_category", foreignKey = @ForeignKey(name = "fk_category"), nullable = false)
 	private Category category;
 
@@ -87,9 +87,9 @@ public class Ingredient implements Serializable {
 	private String comment;
 
 	// owner of ingredient since object user
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER) // type of relation with user entity
 	@JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user"), nullable = false)
-	@JsonBackReference(value = "ownerIngredient")
+	@JsonBackReference(value = "ownerIngredient") // to do the link with user without give information in Json (loop effect)
 	private User owner;
 
 	// this attribute is to define if the ingredient is active or not
@@ -100,8 +100,8 @@ public class Ingredient implements Serializable {
 
 	// this is the relation Object between Recipe who content some ingredients with
 	// quantity, this link is done by object QuantityRecipe
-	@OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL) // type of relation with recipe since QuantityRecipe
+	@JsonIgnore // to do link to have ingredient details since a recipe but to do not a loop with recipe information in an ingredient
 	private List<QuantityRecipe> listOfRecipes = new ArrayList<>();
 
 	/*************************

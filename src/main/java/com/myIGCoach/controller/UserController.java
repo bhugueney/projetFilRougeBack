@@ -86,11 +86,6 @@ public class UserController {
 		return userService.delete(u, userId);
 	}
 
-	
-	
-	
-	
-	
 	/**
 	 * method to authenticate an user by email and hashpassword
 	 * 
@@ -108,8 +103,5 @@ public class UserController {
 		System.out.println("user authenticate " + authToken );
 		return userService.authenticate(authToken);
 	}
-	
-	
-	
 	
 }

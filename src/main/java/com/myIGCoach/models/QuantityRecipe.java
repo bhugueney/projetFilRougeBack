@@ -26,14 +26,14 @@ public class QuantityRecipe implements Serializable {
 
 	// link to the id of recipe since object Recipe
 	@Id
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER) // type of relation with recipe entity
 	@JoinColumn(name = "fk_recipe", nullable = false, foreignKey = @ForeignKey(name = "fk_recipe"))
-	@JsonBackReference(value = "recipe")
+	@JsonBackReference(value = "recipe") // to do the link with the recipe
 	private Recipe recipe;
 
 	// link to the ingredients since object Ingredient
 	@Id
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER) // type of relation with ingredient entity to have information about ingredient
 	@JoinColumn(name = "fk_ingredient", nullable = false, foreignKey = @ForeignKey(name = "fk_ingredient"))
 	private Ingredient ingredient;
 

@@ -90,4 +90,24 @@ public class QuantityRecipe implements Serializable {
 		this.quantity = quantity;
 	}
 
+	public String toString() {
+		String result = "";
+		result += "QuantityRecipe[";
+		
+		if ( this.getRecipe() != null ) {
+			result += "recipe='" + this.getRecipe().getId() + "', ";
+		} else {
+			result += "recipe=NULL, ";
+		}
+		
+		if ( this.getIngredient() != null) {
+			result += "ingredient='" + this.getIngredient().getId() + "',  ";
+		} else {
+			result += "ingredient=NULL,  ";
+		}
+		
+		result += "quantity=" + this.getQuantity();
+		result += "]";
+		return result;
+	}
 }

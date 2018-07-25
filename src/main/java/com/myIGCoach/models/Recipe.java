@@ -47,4 +47,8 @@ public class Recipe extends Ingredient {
 		this.listOfIngredients = listOfIngredients;
 	}
 
+	
+	public String toString() {
+		return "Recipe[id=" + this.getId() + ", name='" + this.getName() + "', categorie='" + this.getCategory().getName() + "']";
+	}
 }

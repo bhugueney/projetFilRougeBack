@@ -13,7 +13,7 @@ import com.myIGCoach.models.Recipe;
 @Service
 public interface RecipeService {
 	// method to save a new recipe
-	public Recipe create(Recipe r, Long userId);
+	public ResponseEntity<Recipe> create(Recipe r, Long userId);
 
 	// method to list all Recipe of user
 	public List<Recipe> findAll(Long userId);

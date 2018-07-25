@@ -7,14 +7,17 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.myIGCoach.models.Ingredient;
 import com.myIGCoach.models.QuantityRecipe;
 import com.myIGCoach.models.Recipe;
+import com.myIGCoach.models.User;
 import com.myIGCoach.repository.MealRepository;
 import com.myIGCoach.repository.RecipeRepository;
+import com.myIGCoach.repository.UserRepository;
 import com.myIGCoach.tools.CheckList;
 
 /*********************************************************************
@@ -36,7 +39,10 @@ public class RecipeServiceImp implements RecipeService {
 	@Inject
 	private MealService mealService;
 	@Inject
+	private UserRepository userRepository;
+	@Inject
 	private CheckList checkList;
+	
 
 	/**
 	 * method to create a recipe
@@ -48,14 +54,39 @@ public class RecipeServiceImp implements RecipeService {
 	 * @return recipe created or null or internet server error
 	 */
 	@Override
-	public Recipe create(Recipe r, Long userId) {
-		if (checkList.checkRecipeInformation(r, userId)) {
-			return recipeRepository.save(r);
+	public ResponseEntity<Recipe> create(Recipe r, Long userId) {
+		
+		// Getting user information to inject owner information in ingredient instance
+		Optional<User> owner = this.userRepository.findById(userId);
+		if (!owner.isPresent()) {
+			return new ResponseEntity<Recipe>(HttpStatus.PRECONDITION_FAILED);
+		}
+
+		r.setOwner(owner.get());
+
+		
+		System.out.println("");
+		System.out.println("------------- Recipe Service Create -----------------------");
+		System.out.println("Recipe received : " + r);
+		
+		boolean check = checkList.checkRecipeInformation(r, userId);
+		if (check) {			
+			System.out.println("RecipeService create : checkRecipeInformation OK");
+			try {
+				final Recipe createdRecipe = recipeRepository.save(r);
+				System.out.println("RecipeService create : recipe return by repo save : " + createdRecipe);
+				return new ResponseEntity<Recipe>(createdRecipe, HttpStatus.OK);
+			} catch( Exception e) {
+				e.printStackTrace(System.err);
+				return new ResponseEntity<Recipe>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
-			return null;
+			System.err.println("RecipeService create : checkRecipeInformation NOK");
+			return new ResponseEntity<Recipe>(HttpStatus.PRECONDITION_FAILED);
 		}
 	}
 
+	
 	/**
 	 * method to list recipes of user
 	 * 

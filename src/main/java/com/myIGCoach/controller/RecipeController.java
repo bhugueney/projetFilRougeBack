@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.myIGCoach.models.Ingredient;
 import com.myIGCoach.models.Recipe;
 import com.myIGCoach.service.RecipeService;
 
@@ -38,7 +39,7 @@ public class RecipeController {
 	 * @return recipe created or null if KO or internet server error
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public Recipe create(@RequestBody Recipe r, @RequestParam("userId") Long userId) {
+	public ResponseEntity<Recipe> create(@RequestBody Recipe r, @RequestParam("userId") Long userId) {
 		return recipeService.create(r, userId);
 	}
 

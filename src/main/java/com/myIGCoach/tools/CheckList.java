@@ -123,8 +123,10 @@ public class CheckList {
 		}
 		if (ingredient != null && i.getOwner() != null && ingredient.isPresent()
 				&& ingredient.get().getOwner().getId() == i.getOwner().getId()) {
+			System.out.println("checkIngredientExists : " + i + " return True !");
 			return true;
 		} else {
+			System.out.println("checkIngredientExists : " + i + " return False!");
 			return false;
 		}
 	}
@@ -143,17 +145,35 @@ public class CheckList {
 		boolean result = false;
 		if (i.getName() != null && i.getName() != "") {
 			// TODO REGEX CONTROLLER ON STRING NAME
-			if (i.getCategory() != null && i.getCategory().getId() != null
-					&& checkCategoryExists(categoryRepository.findById(i.getCategory().getId()).get())) {
-					// TODO SECURITY CONTROL ON COMMENT
-					// TODO SECURITY CONTROL ON IMAGE
-					// TODO SECURITY CONTROL ON DATAS (not necessary with the type double)
-					result = true;
+			if (i.getCategory() != null) {
+				if (i.getCategory().getId() != null) {
+					if (checkCategoryExists(categoryRepository.findById(i.getCategory().getId()).get())) {
+						// TODO SECURITY CONTROL ON COMMENT
+						// TODO SECURITY CONTROL ON IMAGE
+						// TODO SECURITY CONTROL ON DATAS (not necessary with the type double)
+						result = true;
+						System.out.println("checkIngredientInformations : name and category OK");
+						
+					} else {
+						System.err.println("Error checkIngredientInformations : return false because Category asked not found in database");
+					}
+					
+				} else {
+					System.err.println("Error checkIngredientInformations : return false because Category.Id is null");
+				}
+				
+			} else {
+				System.err.println("Error checkIngredientInformations : return false because Category is null");
 			}
+			
+		} else {
+			System.err.println("checkIngredientInformations : return false because no  name provided");
 		}
+			
 		return result;
 	}
 
+	
 	/**
 	 * method to check if the creation of the ingredient is possible or not (because
 	 * name is used)
@@ -166,8 +186,17 @@ public class CheckList {
 	 */
 	public boolean checkNewIngredient(Ingredient i, Long id) {
 		if (!checkIngredientExists(i)) {
-			return checkIngredientInformations(i, id);
+			System.out.println("checkNewIngredient : controle inexistance OK");
+			if(checkIngredientInformations(i, id)) {
+				System.out.println("checkNewIngredient : checkIngredientInformations is OK");
+				return true;
+			} else {
+				System.err.println("checkNewIngredient : checkIngredientInformations is NOK");
+				return false;
+			}
+			
 		} else {
+			System.err.println("Erreur sur checkNewIngredient : checkIngredientExists : retrun true" + i);
 			return false;
 		}
 	}
@@ -248,12 +277,23 @@ public class CheckList {
 	 * @return boolean
 	 */
 	public boolean checkRecipeInformation(Recipe r, Long userId) {
-		if (checkNewIngredient(r, userId) && !r.getListOfIngredients().isEmpty()) {
-			// TODO control listOfIngredients contents
-			return true;
+		boolean result = false;
+		if (checkNewIngredient(r, userId)) {
+			System.out.println("checkRecipeInformation : check NewIngredient is OK");
+			System.out.println("checkRecipeInformation : nb of ingredients = " + r.getListOfIngredients().size());
+			if(!r.getListOfIngredients().isEmpty()) {
+				System.out.println("checkRecipeInformation : test on ingredients list not empty is OK");
+				// TODO control listOfIngredients contents
+				result = true;
+			} else {
+				System.err.println("Erreur sur checkRecipeInformation : test on ingredients list not empty is bad");
+				result = false;
+			}
 		} else {
-			return false;
+			System.err.println("Erreur sur checkRecipeInformation : check NewIngredient is bad");
+			result = false;
 		}
+		return result;
 	}
 
 	/**

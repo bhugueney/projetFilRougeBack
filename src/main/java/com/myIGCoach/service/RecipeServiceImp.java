@@ -90,9 +90,11 @@ public class RecipeServiceImp implements RecipeService {
 	 */
 	@Override
 	public String update(Recipe resource, Long id, Long userId) {
+		System.out.println("==> Appel");
 		Optional<Recipe> r = recipeRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
-		if (r.isPresent() && r.get().getId() == resource.getId() && resource.getOwner().getId() == userId
-				&& !resource.getListOfIngredients().isEmpty()) {
+		System.out.println(r.isPresent()+" || "+r.get().getId()+" || "+resource.getId()+" || "+resource.getOwner().getId()+" || "+resource.getListOfIngredients().isEmpty());
+		if (r.isPresent() && (r.get().getId() == resource.getId()) && (resource.getOwner().getId() == userId)
+				&& (resource.getListOfIngredients().isEmpty() == false)) {
 			recipeRepository.save(resource);
 			return "Update is ok";
 		} else {

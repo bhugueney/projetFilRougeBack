@@ -26,9 +26,9 @@ public class QuantityRecipe implements Serializable {
 
 	// link to the id of recipe since object Recipe
 	@Id
-	@ManyToOne(fetch = FetchType.EAGER) // type of relation with recipe entity
+	@ManyToOne(fetch = FetchType.EAGER)  // type of relation with recipe entity
 	@JoinColumn(name = "fk_recipe", nullable = false, foreignKey = @ForeignKey(name = "fk_recipe"))
-	@JsonBackReference(value = "recipe") // to do the link with the recipe
+	@JsonBackReference(value = "recipe")  // to do the link with the recipe
 	private Recipe recipe;
 
 	// link to the ingredients since object Ingredient
@@ -90,4 +90,25 @@ public class QuantityRecipe implements Serializable {
 		this.quantity = quantity;
 	}
 
+	// Needed for logs
+	public String toString() {
+		String result = "";
+		result += "QuantityRecipe[";
+		
+		if ( this.getRecipe() != null ) {
+			result += "recipe='" + this.getRecipe().getId() + "', ";
+		} else {
+			result += "recipe=NULL, ";
+		}
+		
+		if ( this.getIngredient() != null) {
+			result += "ingredient='" + this.getIngredient().getId() + "',  ";
+		} else {
+			result += "ingredient=NULL,  ";
+		}
+		
+		result += "quantity=" + this.getQuantity();
+		result += "]";
+		return result;
+	}
 }

@@ -22,7 +22,7 @@ public interface RecipeService {
 	public ResponseEntity<Recipe> read(Long id, Long userId);
 
 	// method to update a recipe only if user is recipe's owner
-	public String update(Recipe r, Long id, Long userId);
+	public ResponseEntity<Recipe> update(Recipe r, Long id, Long userId);
 
 	// method to remove a recipe only if user is recipe's owner
 	public String delete(Long id, Long userId);

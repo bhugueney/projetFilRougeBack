@@ -70,6 +70,9 @@ public class RecipeController {
 		return recipeService.read(id, userId);
 	}
 
+	
+	
+	
 	/**
 	 * method to update a recipe
 	 * 
@@ -83,11 +86,15 @@ public class RecipeController {
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	@ResponseBody
-	public String update(@PathVariable("id") Long id, @RequestBody Recipe resource,
+	public ResponseEntity<Recipe> update(@PathVariable("id") Long id, @RequestBody Recipe resource,
 			@RequestParam("userId") Long userId) {
 		return recipeService.update(resource, id, userId);
 	}
 
+	
+	
+	
+	
 	/**
 	 * method to delete a recipe
 	 * 

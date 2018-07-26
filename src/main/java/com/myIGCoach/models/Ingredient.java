@@ -551,4 +551,12 @@ public class Ingredient implements Serializable {
 		this.owner = owner;
 	}
 
+	@Override
+	public String toString() {
+		return "Ingredient [id=" + id + ", name=" + name + ", comment=" + comment + ", owner=" + owner + ", active="
+				+ active + "]";
+	}
+
+	
+	
 }

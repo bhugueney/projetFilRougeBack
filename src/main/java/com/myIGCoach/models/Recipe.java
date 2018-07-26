@@ -47,8 +47,10 @@ public class Recipe extends Ingredient {
 		this.listOfIngredients = listOfIngredients;
 	}
 
-	
+	@Override
 	public String toString() {
-		return "Recipe[id=" + this.getId() + ", name='" + this.getName() + "', categorie='" + this.getCategory().getName() + "']";
+		return "Recipe [" + super.toString() + ", listOfIngredients size: " + this.listOfIngredients.size() + "]";
 	}
+	
+	
 }

@@ -2,6 +2,9 @@ version: '2'
 services:
     app-postgresql:
         image: postgres:10.1
+        build:
+            context: .
+            dockerfile: Dockerfile.postgresdb
         volumes:
             - ./postgres/postgresql/:/var/lib/postgresql/data/
         environment:

@@ -25,7 +25,7 @@ public class Recipe extends Ingredient {
 
 	// a recipe contend a list of ingredients with their quantity
 	@JsonManagedReference(value = "recipe") // to send the ingredients of recipe since the QuantityRecipe entity
-	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL) // type of relation
+	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true) // type of relation
 	private List<QuantityRecipe> listOfIngredients = new ArrayList<>();
 
 	/************************

@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +37,9 @@ public class RecipeServiceImp implements RecipeService {
 	private UserRepository userRepository;
 	@Inject
 	private CheckList checkList;
-	
-	
-	
-	
-	
+
+	@PersistenceContext
+	EntityManager entityManager;
 
 	/**
 	 * method to create a recipe
@@ -164,18 +164,22 @@ public class RecipeServiceImp implements RecipeService {
 			System.out.println("Recipe found in base : " + r.get());
 			
 			// check if founded id is equal than asked resource id
-			Recipe foundedRecipe = r.get();
-			long foundedRecipeId = foundedRecipe.getId();
+			Recipe foundRecipe = r.get();
+
+			// Use of Spring Context entity Manager to detach foundRecipe
+			entityManager.detach(foundRecipe);
+
+			long foundRecipeId = foundRecipe.getId();
 			long resourceId = resource.getId();
 
-			if (foundedRecipeId == resourceId) {
+			if (foundRecipeId == resourceId) {
 				// id found is equal than asked id
 									
 				// check if list of ingredients  contains ingredients
 				if (!resource.getListOfIngredients().isEmpty()) {
 					// list of ingredients contains ingredients		
 					
-					resource.setOwner(foundedRecipe.getOwner()); // set the owner in the asked update because it is not gived by front for security reasons
+					resource.setOwner(foundRecipe.getOwner()); // set the owner in the asked update because it is not gived by front for security reasons
 					
 					try {
 						final Recipe updatedRecipe = recipeRepository.save(resource);
@@ -195,12 +199,11 @@ public class RecipeServiceImp implements RecipeService {
 					System.err.println("RecipeService update: Update impossible because this recipe doesnt contains ingredients.");
 					return new ResponseEntity<Recipe>(HttpStatus.PRECONDITION_FAILED);
 				}
-				
 							
 				
 			} else {
 				// id found is different than asked id
-				System.err.println("RecipeService update: Update impossible because recip id founded in base (" + foundedRecipeId + ")  is diferent from asked update resource recip id (" + resourceId + ") !");
+				System.err.println("RecipeService update: Update impossible because recip id founded in base (" + foundRecipeId + ")  is diferent from asked update resource recip id (" + resourceId + ") !");
 				return new ResponseEntity<Recipe>(HttpStatus.PRECONDITION_FAILED);
 			}
 			

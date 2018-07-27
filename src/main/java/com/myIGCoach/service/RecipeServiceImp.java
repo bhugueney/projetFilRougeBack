@@ -1,5 +1,6 @@
 package com.myIGCoach.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +55,8 @@ public class RecipeServiceImp implements RecipeService {
 	public ResponseEntity<Recipe> create(Recipe r, Long userId) {
 		
 		System.out.println("");
-		System.out.println("------------- Recipe Service Create -----------------------");
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		System.out.println("------------- " + timestamp + "  Recipe Service Create -----------------------");
 		System.out.println("Recipe received : " + r);
 		
 		
@@ -151,7 +153,8 @@ public class RecipeServiceImp implements RecipeService {
 		Optional<Recipe> r = recipeRepository.findByIdAndOwnerIdAndActiveIsTrue(id, userId);
 		
 		System.out.println("");
-		System.out.println("------------- Recipe Service Update -----------------------");
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		System.out.println("------------- " + timestamp + "  Recipe Service Update -----------------------");
 		System.out.println("Recipe received : " + resource);
 		System.out.println("Id asked to update : " + id);
 		System.out.println("UserId : " + userId);
@@ -243,15 +246,15 @@ public class RecipeServiceImp implements RecipeService {
 					for (Ingredient i : list) {
 						ingredientService.delete(i.getId(), userId);
 					}
-					return "Your recipe has been removed.";
+					return "{\"message\":\"Your recipe has been removed.\"}";
 				} else {
 					r.get().setActive(false);
 					recipeRepository.save(r.get());
-					return "Your recipe has been desactived.";
+					return "{\"message\":\"Your recipe has been desactived.\"}";
 				}
 			}
 		} else {
-			return "Sorry, this recipe does not exists.";
+			return "{\"message\":\"Sorry, this recipe does not exists.\"}";
 		}
 	}
 

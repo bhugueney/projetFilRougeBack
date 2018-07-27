@@ -49,7 +49,7 @@ public class Recipe extends Ingredient {
 
 	@Override
 	public String toString() {
-		return "Recipe [" + super.toString() + ", listOfIngredients size: " + this.listOfIngredients.size() + "]";
+		return "Recipe [" + super.toString() + ", listOfIngredients size: " + this.listOfIngredients.size() + "], listOfIngredients : " + this.listOfIngredients;
 	}
 	
 	

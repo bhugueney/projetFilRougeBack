@@ -28,3 +28,4 @@ bin/
 *.properties
 *.class
 *.csv.*
+/src/main/docker/postgres/

@@ -62,11 +62,6 @@ The Spring Boot Maven plugin includes a run goal that can be used to quickly com
 If you use the Spring Boot Maven or Gradle plugins to create an executable jar, you can run your application using java -jar, as shown in the following example:
 
     $ java -jar target/FilRouge-0.0.1-SNAPSHOT.jar
-It is also possible to run a packaged application with remote debugging support enabled. Doing so lets you attach a debugger to your packaged application, as shown in the following example:
-
-    $ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
-       -jar target/FilRouge-0.0.1-SNAPSHOT.jar
-
 
 ## Further help
 

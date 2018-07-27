@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myIGCoach.models.Ingredient;
+//import com.myIGCoach.models.Ingredient;
 import com.myIGCoach.models.Recipe;
 import com.myIGCoach.service.RecipeService;
 

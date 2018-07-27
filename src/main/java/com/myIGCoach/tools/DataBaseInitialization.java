@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
+// import ch.qos.logback.core.net.SyslogOutputStream;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;

@@ -105,6 +105,10 @@ If you use the Spring Boot Maven or Gradle plugins to create an executable jar, 
 
     $ java -jar target/FilRouge-0.0.1-SNAPSHOT.jar
 
+### Technical documentation (Java-doc generated)
+You can find documentation regarding this server [here](./documentation/index.html) or in documentation repository of this  project.
+
+
 ## Further help
 
 Feel free to join us on Slack or by email

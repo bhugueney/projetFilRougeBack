@@ -68,7 +68,7 @@ public class CategoryServiceImp implements CategoryService {
 	/**
 	 * method to list children of category
 	 * 
-	 * @param id:
+	 * @param parentId:
 	 *            parent category id
 	 */
 	@Override

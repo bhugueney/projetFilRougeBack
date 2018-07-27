@@ -169,7 +169,7 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
                 System.err.println("sysAdmin user doesn't exist in database ! ");
             } else {
 
-                System.out.println("Creation de la liste d'ingrédient");
+                System.out.println("Ingredients creation...");
 
                 List<Ingredient> ingredientList = new ArrayList<Ingredient>();
 

@@ -75,7 +75,7 @@ public class CategoryController {
     /**
      * method to list children of one category
      *
-     * @param id: parent category id
+     * @param parentId: parent category id
      * @return informations about this children
      */
     @RequestMapping(method = RequestMethod.GET, value = "children/{parentId}")

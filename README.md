@@ -43,9 +43,10 @@ To be completed by [Hugues]()
 Server will be launched on 'http://localhost:8095/'. 
 It will accept all requests coming from local client (http://localhost:4200). This origin can be change in class CorsFilter.java
 
-To launch the application you can use on of those methods:
+To launch the application you can use on of those methods
 
 ###Running from an IDE
+
 You can run a Spring Boot application from your IDE as a simple Java application. However, you first need to import your project. Import steps vary depending on your IDE and build system. Most IDEs can import Maven projects directly. 
 For example, Eclipse users can select 
 >    Import…​ → Existing Maven Projects from the File menu.
@@ -70,6 +71,9 @@ It is also possible to run a packaged application with remote debugging support 
 ## Further help
 
 Feel free to join us on Slack or by email
+
 [Gabriel Wisniewski](gabriel.wisniewski@gmail.com)
+
 [Frederik Pujada]()
+
 [Hugues au frais]()

@@ -30,4 +30,6 @@ public interface CategoryService {
 	// method to delete a category (only ROLE_ADMIN)
 	public String delete(Long id, Long userId);
 
+	public List<Category> readLeafCategories();
+
 }

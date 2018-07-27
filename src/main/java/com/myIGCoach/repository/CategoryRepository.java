@@ -22,4 +22,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	// method to find children of category
 	public Optional<List<Category>> findByParentId(Long parentId);
 
+	// method to get all categories without children
+	public List<Category> findAllByListOfChildrenIsNullOrderByName();
+
 }

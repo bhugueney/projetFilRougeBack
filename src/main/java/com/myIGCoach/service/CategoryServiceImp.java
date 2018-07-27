@@ -129,4 +129,13 @@ public class CategoryServiceImp implements CategoryService {
 		}
 	}
 
+	/**
+	 * method to get category without child.
+	 * @return List of categories without child
+	 */
+	@Override
+	public List<Category> readLeafCategories(){
+		return categoryRepository.findAllByListOfChildrenIsNullOrderByName();
+	}
+
 }

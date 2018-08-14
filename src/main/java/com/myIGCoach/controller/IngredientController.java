@@ -50,7 +50,7 @@ public class IngredientController {
 	 * 
 	 * @param id:
 	 *            this is the user id to do the request
-	 * @return the global list that contains basics ingredients & user's ingredients
+	 * @return the global list that contains basics ingredients and user's ingredients
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
@@ -77,7 +77,7 @@ public class IngredientController {
 	/**
 	 * Request GET with a variable category id to list ingredients since it
 	 * 
-	 * @param id
+	 * @param catId
 	 *            : variable to designate the id of category of ingredients
 	 * @param userId
 	 *            : contains the id of user who do the request

@@ -70,7 +70,7 @@ public class UserServiceImp implements UserService {
 	}
 
 	/**
-	 * method to update informations (firstName & lastName) about a user
+	 * method to update informations (firstName and lastName) about a user
 	 * 
 	 * @param u: user u
 	 * @param userId: user id do the request return string about the result
@@ -136,7 +136,7 @@ public class UserServiceImp implements UserService {
 	/**
 	 * method to do authenticate a user by his email and password
 	 * 
-	 * @param email: user email
+	 * @param base64EncodedjsonToken: user email
 	 * 
 	 *        return user informations
 	 */
@@ -164,8 +164,8 @@ public class UserServiceImp implements UserService {
 					System.out.println("user found : " + responseUser.getEmail() + " " + responseUser.getPassword());
 
 					// If user found
-					String salt = authtoken.getEmail(); // TODO a remplacer plus tard par un sel stocké dans le user et
-														// calculé à la création du user.
+					String salt = authtoken.getEmail(); // TODO To replace by salt linked to user and calculated during user creation
+
 					try {
 						// First decode password received (password should be send by front in base64
 						// encoded format

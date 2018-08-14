@@ -68,7 +68,7 @@ public class CategoryServiceImp implements CategoryService {
 	/**
 	 * method to list children of category
 	 * 
-	 * @param id:
+	 * @param parentId:
 	 *            parent category id
 	 */
 	@Override
@@ -127,6 +127,15 @@ public class CategoryServiceImp implements CategoryService {
 		} else {
 			return "Sorry, you are not authorised to remove this element.";
 		}
+	}
+
+	/**
+	 * method to get category without child.
+	 * @return List of categories without child
+	 */
+	@Override
+	public List<Category> readLeafCategories(){
+		return categoryRepository.findAllByListOfChildrenIsNullOrderByName();
 	}
 
 }

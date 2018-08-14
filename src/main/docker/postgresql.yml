@@ -1,0 +1,15 @@
+version: '2'
+services:
+    app-postgresql:
+        image: postgres:10.1
+        build:
+            context: .
+            dockerfile: Dockerfile.postgresdb
+        volumes:
+            - /var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=app
+            - POSTGRES_PASSWORD=filRouge
+            - POSTGRES_DB=filrouge
+        ports:
+            - 5432:5432

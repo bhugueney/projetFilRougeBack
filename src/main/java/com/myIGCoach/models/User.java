@@ -152,4 +152,11 @@ public class User {
 		this.ingredients = ingredients;
 	}
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", role="
+				+ role + "]";
+	}
+
+	
 }

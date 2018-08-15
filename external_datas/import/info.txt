@@ -1,0 +1,3 @@
+!!!! DO NOT DELETE THIS FILE !!!
+
+Place in import directory the file to import in database at startup

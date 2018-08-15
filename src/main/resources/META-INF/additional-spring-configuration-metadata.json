@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "dataBaseInitialization.importFolder",
+    "type": "java.lang.String",
+    "description": "folder where search files to import in database"
+  },
+  {
+    "name": "dataBaseInitialization.backupFolder",
+    "type": "java.lang.String",
+    "description": "folder where files imported where placed after successful import"
+  },
+  {
+    "name": "dataBaseInitialization.alimentsFile",
+    "type": "java.lang.String",
+    "description": "file name for aliments"
+  },
+  {
+    "name": "dataBaseInitialization.glycemicFile",
+    "type": "java.lang.String",
+    "description": "file name for glycemic indexes"
+  },
+  {
+    "name": "client.url",
+    "type": "java.lang.String",
+    "description": "client url for cors filter see CorsFilter class"
+  }
+]}

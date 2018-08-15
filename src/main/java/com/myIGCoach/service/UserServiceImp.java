@@ -199,6 +199,10 @@ public class UserServiceImp implements UserService {
 					}
 				} else {
 					// If user not found
+					System.err.println("User " + authtoken.getEmail() + " not found in database !");
+					String salt = authtoken.getEmail(); // TODO To replace by salt linked to user and calculated during user creation
+					String secureUserPassword = authenticationUtil.generateSecurePassword(authtoken.getPassword(), salt);
+					System.out.println("password generated : " + secureUserPassword);
 					resultResponse = ResponseEntity.notFound().build();
 				}
 			} catch (Exception e) {

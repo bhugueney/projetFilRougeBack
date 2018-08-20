@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Value;
 // import ch.qos.logback.core.net.SyslogOutputStream;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -32,10 +33,27 @@ import com.opencsv.CSVReaderBuilder;
 public class DataBaseInitialization implements ApplicationListener<ContextRefreshedEvent> {
 
     private final static char CSV_SEPARATOR = ';';
-    private final static char EMPTY_FIELD = '-';
+    private final static String EMPTY_FIELD = "-";
 
     private final static String SYS_ADMIN_EMAIL = "pf1.fhg@gmail.com";
+    
+    @Value( "${client.url}" )
+    private String clientUrl;
+	
+    
+    @Value( "${dataBaseInitialization.importFolder}" )
+    private  String importFolder;
 
+    @Value( "${dataBaseInitialization.backupFolder}" )
+    private String backupFolder;
+
+    @Value( "${dataBaseInitialization.alimentsFile}" )
+    private String alimentsFile;
+
+    @Value( "${dataBaseInitialization.glycemicFile}" )
+    private  String glycemicFile;
+
+    
     @Inject
     private CategoryRepository categoryRepository;
 
@@ -47,33 +65,89 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
 
     private static int categoriesAdded = 0;
 
+    
+    
     /**
-     * Regarding a file name, a backup of this file is done in the same directory with dated extension
+     * check if a folder exists, if not try to add current workdir and retry
+     *
+     * @param folderPath  folder to check
+     */
+    private String checkFolder(String folderPath) {
+    	// System.out.println("Checking existence for " + folderPath);
+		
+    	File dir = new File(folderPath);
+    	if( dir.exists() ) {
+    		// folderpath exists so we return it
+    		System.out.println(folderPath + " exists !");
+    		return folderPath;
+    	} else {
+    		// folder path doesn't exists, so we try to check if exists in current working dir
+    		System.out.println(folderPath + " doesn't exists !");
+    		String testFolderPath = System.getProperty("user.dir");
+    		testFolderPath += folderPath.charAt(0) == File.separatorChar  ? "" : File.separator; // if folder path doesn't begins with a file separator char, add one.
+    		testFolderPath += folderPath;
+    		System.out.println("Checking existence for " + testFolderPath);
+    		dir = new File(testFolderPath);
+    		if( dir.exists() ) {
+    			// if we found the desired folder in the current working dir, we return the new path
+        		System.out.println(testFolderPath + " exists !");
+        		return testFolderPath;
+        	} else {
+        		// if the path wasn't found we return the initial path
+        		System.out.println(testFolderPath + " doesn't exists !");
+        		System.err.println("Warning : the path " + folderPath + " seems not exists !");
+        		return folderPath;
+        	}
+    	}
+
+    	
+    }
+    
+    
+    /**
+     * Regarding a file name, a backup of this file is done in the backup directory with dated extension
      *
      * @param filePath file path of file to rename
      */
-    private void backupFile(String filePath) {
-        File fileToBackUp = new File(filePath);
+    private void backupFile(String fileName) {
+    	
+    	// Compute fileLocation
+    	String fileLocation = "" + checkFolder(this.importFolder);
+    	fileLocation += fileLocation.charAt(fileLocation.length() - 1) == File.separatorChar  ? "" : File.separator;   // add a fileseparator char at end if needed
+        fileLocation += fileName;
+        
+        
+        File fileToBackUp = new File(fileLocation);
         if (!fileToBackUp.exists()) {
-            System.err.println(filePath + " doesn't exists... No backup to perform");
+            System.err.println(fileLocation + " doesn't exists... No backup to perform");
             return;
         }
+        
+        
         // Creation of dated extension
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         LocalDateTime now = LocalDateTime.now();
         String extension = dtf.format(now);
 
+        // Compute fileBackupLocation
+        String fileBackupLocation = "" + checkFolder(this.backupFolder);
+        fileBackupLocation += fileLocation.charAt(fileBackupLocation.length() - 1) == File.separatorChar  ? "" : File.separator;   // add a fileseparator char at end if needed
+        fileBackupLocation += fileName + "." + extension;
+        
         // Creation of new backup file
-        File backupFile = new File(filePath + "." + extension);
+        File backupFile = new File(fileBackupLocation);
 
 
         if (!fileToBackUp.renameTo(backupFile)) {
-            System.err.println("Warning !!! " + filePath + " has not been renamed ! ");
+            System.err.println("Warning !!! " + fileLocation + " has not been renamed ! ");
         } else {
-            System.out.println(fileToBackUp.getName() + " has been renamed: " + backupFile.getName());
+            System.out.println(fileLocation + " has been renamed: " + fileBackupLocation);
         }
 
     }
+    
+    
+    
 
     /**
      * This method return an existing category or a new one, matching given criteria
@@ -130,6 +204,12 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
         return null;
     }
 
+    
+    
+    
+    
+    
+    
     /**
      * Loads food data into Food table. Reads csv file to import food group data.
      * This function is used to import a multi column file as food items.
@@ -137,12 +217,18 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
      *
      * @param foodFileLocation the location of csv file to import
      */
-    private final void loadFoodTable(String foodFileLocation) {
+    private final void loadFoodTable(String fileName) {
 
         boolean backupIsNeeded = false;
         CSVParser csvParser = new CSVParserBuilder().withSeparator(CSV_SEPARATOR).build();
 
-        try (CSVReader reader = new CSVReaderBuilder(new FileReader(foodFileLocation)).withCSVParser(csvParser)
+        // Compute fileLocation
+    	String fileLocation = "" + checkFolder(this.importFolder);
+        fileLocation += fileLocation.charAt(fileLocation.length() - 1) == File.separatorChar  ? "" : File.separator;   // add a fileseparator char at end if needed
+        fileLocation += fileName;
+        
+        
+        try (CSVReader reader = new CSVReaderBuilder(new FileReader(fileLocation)).withCSVParser(csvParser)
                 .build()) {
 
             // Reading all file content into fileLineList.
@@ -169,7 +255,7 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
                 System.err.println("sysAdmin user doesn't exist in database ! ");
             } else {
 
-                System.out.println("Ingredients creation...");
+                System.out.println("Ingredients creation or updating from " + fileLocation + " ...");
 
                 List<Ingredient> ingredientList = new ArrayList<Ingredient>();
 
@@ -242,7 +328,7 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("No file available for database refreshing...");
+            System.out.println("No file available for database refreshing at " + fileLocation);
             // We do nothing John Snow, as this is for Dev DB fill up
         } catch (IOException e) {
             e.printStackTrace();
@@ -251,10 +337,16 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
 
         // One food aliment file has been processed, this file is backed up with '.old' extension
         if (backupIsNeeded) {
-            backupFile(foodFileLocation);
+            backupFile(fileName);
         }
     }
 
+    
+    
+    
+    
+    
+    
     /**
      * Load Glycemic file data tu update food table.
      * All food without glycemic index will be deleted at the end of this function.
@@ -262,14 +354,21 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
      *
      * @param foodLocation the location of csv file to import
      */
-    private void loadGlycemicFile(String fileLocation) {
-        System.out.println("Glycemic index updating");
-
+    private void loadGlycemicFile(String fileName) {
+        
+        // Compute fileLocation
+    	String fileLocation = "" + checkFolder(this.importFolder);
+        fileLocation += fileLocation.charAt(fileLocation.length() - 1) == File.separatorChar  ? "" : File.separator;   // add a fileseparator char at end if needed
+        fileLocation += fileName;
+        
         boolean backupIsNeeded = false;
         CSVParser csvParser = new CSVParserBuilder().withSeparator(CSV_SEPARATOR).build();
 
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(fileLocation)).withCSVParser(csvParser).build()) {
 
+        	System.out.println("Glycemic index updating from " + fileLocation + " ..." );
+             
+        	
             List<String[]> fileLineList = reader.readAll();
             List<Ingredient> foodToUpdateList = new ArrayList<>();
 
@@ -301,7 +400,7 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
 
         } catch (FileNotFoundException e) {
             // We do nothing John Snow, as this is for Dev DB fill up
-            System.out.println("No file available for Glycemic Index refresh");
+            System.out.println("No file available for Glycemic Index refresh at " + fileLocation);
         } catch (IOException e) {
             // We do nothing John Snow, as this is for Dev DB fill up
             e.printStackTrace();
@@ -309,16 +408,22 @@ public class DataBaseInitialization implements ApplicationListener<ContextRefres
 
         if (backupIsNeeded) {
             // Once Glycemic file has been processed, a backup is performed
-            backupFile(fileLocation);
+            backupFile(fileName);
         }
     }
 
+    
+    
+    
     @Override
     public void onApplicationEvent(ContextRefreshedEvent arg0) {
-        // TODO Auto-generated method stub
-        System.out.println("Refreshing database");
-        loadFoodTable("src/main/resources/data/csv/aliments.csv");
-        loadGlycemicFile("src/main/resources/data/csv/glycemique.csv");
+    	
+    	System.out.println("Cors Allow requests from this client url : " + clientUrl);
+    	
+    	//System.out.println("Current workdir = " + System.getProperty("user.dir"));
+    	System.out.println("Refreshing database from " + this.importFolder);
+        loadFoodTable(this.alimentsFile);
+        loadGlycemicFile(this.glycemicFile);
     }
 
 }

@@ -15,3 +15,8 @@ WHERE NOT EXISTS (select 1 from public.users where email = 'hugues.poumeyrol.pf1
 insert into public.users(id, email,role, pwd,first_name, last_name) 
 SELECT nextval('public.user_seq'), 'gabriel.wisniewski@gmail.com','ROLE_USER','bVzo69KXz4PJwzcyR06W1tyOqJl4HFbiRQmy56neSII=','Gabriel', 'Wisniewski'
 WHERE NOT EXISTS (select 1 from public.users where email = 'gabriel.wisniewski@gmail.com');
+
+insert into public.users(id, email,role, pwd,first_name, last_name) 
+SELECT nextval('public.user_seq'), 'guest.filrouge.fhg@gmail.com','ROLE_USER','+VBsIaznqU4G7j0CaYnvawSiTMo1o16/tTRybYKpWUk=','Guest', ''
+WHERE NOT EXISTS (select 1 from public.users where email = 'guest.filrouge.fhg@gmail.com');
+
